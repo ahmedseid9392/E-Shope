@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/lib/actions/auth";
+import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export async function SiteHeader() {
   const supabase = createClient();
@@ -19,45 +21,49 @@ export async function SiteHeader() {
   }
 
   return (
-    <header className="border-b border-neutral-200">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-        <Link href="/" className="text-lg font-semibold">
-          My Store
+    <header className="border-b border-line">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <Link href="/">
+          <Logo />
         </Link>
 
-        <nav className="flex items-center gap-4 text-sm">
+        <nav className="flex items-center gap-6 text-sm font-medium text-ink">
+          <Link href="/products" className="transition hover:text-accent">
+            Products
+          </Link>
           {user ? (
             <>
-              <Link href="/orders" className="text-neutral-700 hover:text-neutral-900">
+              <Link href="/cart" className="transition hover:text-accent">
+                Cart
+              </Link>
+              <Link href="/orders" className="transition hover:text-accent">
                 Orders
               </Link>
               {isAdmin && (
-                <Link href="/admin" className="text-neutral-700 hover:text-neutral-900">
+                <Link href="/admin" className="transition hover:text-accent">
                   Admin
                 </Link>
               )}
               <form action={signOut}>
-                <button
-                  type="submit"
-                  className="text-neutral-600 hover:text-neutral-900"
-                >
+                <button type="submit" className="text-muted transition hover:text-ink">
                   Sign out
                 </button>
               </form>
             </>
           ) : (
             <>
-              <Link href="/login" className="text-neutral-700 hover:text-neutral-900">
+              <Link href="/login" className="transition hover:text-accent">
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="rounded bg-neutral-900 px-3 py-1.5 text-white hover:bg-neutral-800"
+                className="rounded-full bg-ink px-4 py-2 text-white transition hover:bg-ink/90"
               >
                 Sign up
               </Link>
             </>
           )}
+          <ThemeToggle />
         </nav>
       </div>
     </header>

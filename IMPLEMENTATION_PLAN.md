@@ -18,10 +18,13 @@ don't start Phase 4 with Phase 2 half-done.
   non-admins away from `/admin`; each protected page also re-checks server-side. A DB trigger
   (`0002_handle_new_user.sql`) auto-creates the `profiles` row on signup. Reference: `docs/security.md`.
 
-- [ ] **Phase 4 — Core backend modules**
-  Server Actions / Route Handlers for: products (CRUD + list/filter/search), cart, orders,
-  reviews, search history. This is the bulk of business logic — no payment integration yet.
-  Reference: `docs/api.md`, `docs/requirements.md`.
+- [x] **Phase 4 — Core backend modules**
+  Server Actions for: products (public list/filter/search + admin CRUD via soft-delete), cart
+  (add/update/remove), orders (create pending order from cart, list/detail, admin status
+  update), reviews (create if delivered, list), search (log + recent searches). Minimal UI
+  wired up alongside each so they're testable now rather than blind. Payment (Chapa) is
+  intentionally not wired into checkout yet — orders are created as `pending`; Phase 8 adds the
+  real payment step. Reference: `docs/api.md`, `docs/requirements.md`.
 
 - [ ] **Phase 5 — API documentation**
   Once real routes exist, verify `docs/api.md` matches what was actually built (params, response

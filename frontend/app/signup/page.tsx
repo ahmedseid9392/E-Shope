@@ -10,7 +10,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded bg-neutral-900 py-2 text-white transition hover:bg-neutral-800 disabled:opacity-50"
+      className="w-full rounded bg-ink py-2 text-white transition hover:bg-ink/90 disabled:opacity-50"
     >
       {pending ? "Creating account..." : "Sign up"}
     </button>
@@ -22,7 +22,7 @@ export default function SignupPage() {
 
   return (
     <main className="mx-auto max-w-sm px-4 py-16">
-      <h1 className="text-2xl font-semibold">Sign up</h1>
+      <h1 className="font-display text-2xl font-bold text-ink">Sign up</h1>
 
       <form action={formAction} className="mt-6 space-y-4">
         <div>
@@ -35,7 +35,7 @@ export default function SignupPage() {
             type="text"
             required
             autoComplete="name"
-            className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 focus:border-neutral-900 focus:outline-none"
+            className="mt-1 w-full rounded border border-line px-3 py-2 focus:border-ink focus:outline-none"
           />
         </div>
 
@@ -49,7 +49,7 @@ export default function SignupPage() {
             type="email"
             required
             autoComplete="email"
-            className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 focus:border-neutral-900 focus:outline-none"
+            className="mt-1 w-full rounded border border-line px-3 py-2 focus:border-ink focus:outline-none"
           />
         </div>
 
@@ -64,7 +64,7 @@ export default function SignupPage() {
             required
             minLength={6}
             autoComplete="new-password"
-            className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 focus:border-neutral-900 focus:outline-none"
+            className="mt-1 w-full rounded border border-line px-3 py-2 focus:border-ink focus:outline-none"
           />
         </div>
 
@@ -73,7 +73,7 @@ export default function SignupPage() {
         <SubmitButton />
       </form>
 
-      <p className="mt-4 text-sm text-neutral-600">
+      <p className="mt-4 text-sm text-muted">
         Already have an account?{" "}
         <Link href="/login" className="underline">
           Log in

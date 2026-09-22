@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-bg: 250 249 246;
+  --color-surface: 255 255 255;
+  --color-ink: 27 31 59;
+  --color-accent: 225 167 48;
+  --color-line: 222 219 210;
+  --color-muted: 107 111 118;
+}
+
+.dark {
+  --color-bg: 15 18 35;
+  --color-surface: 28 33 57;
+  --color-ink: 244 241 234;
+  --color-accent: 244 186 66;
+  --color-line: 56 60 82;
+  --color-muted: 181 184 196;
+}
+
+html {
+  background: rgb(var(--color-bg));
+}
+
+body {
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+::selection {
+  background-color: rgb(var(--color-accent));
+  color: rgb(var(--color-bg));
+}
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    background-color: rgb(var(--color-surface));
+    color: rgb(var(--color-ink));
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(var(--color-muted));
+  }
+}
+
+.dark {
+  color-scheme: dark;
+}
