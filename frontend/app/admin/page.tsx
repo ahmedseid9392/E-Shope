@@ -24,11 +24,17 @@ export default async function AdminPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-16">
-      <h1 className="text-2xl font-semibold">Admin dashboard</h1>
-      <p className="mt-2 text-neutral-600">
-        Signed in as {profile.full_name ?? user!.email}. Product/order management and stats
-        land here in Phase 4 &amp; 7 — see IMPLEMENTATION_PLAN.md.
-      </p>
+      <h1 className="font-display text-2xl font-bold text-ink">Admin dashboard</h1>
+      <p className="mt-2 text-muted">Signed in as {profile.full_name ?? user!.email}.</p>
+
+      <div className="mt-6 flex gap-4">
+        <a href="/admin/products" className="rounded border border-line px-4 py-2 text-sm hover:border-ink">
+          Manage products
+        </a>
+        <a href="/admin/orders" className="rounded border border-line px-4 py-2 text-sm hover:border-ink">
+          Manage orders
+        </a>
+      </div>
     </main>
   );
 }
