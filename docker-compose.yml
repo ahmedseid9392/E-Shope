@@ -1,0 +1,17 @@
+version: "3.9"
+
+# Runs the Next.js frontend in a container for local/staging use.
+# Supabase is NOT included here — run it separately via the Supabase CLI:
+#   cd backend && supabase start
+# Then point the env vars below at the URL/keys it prints out.
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env.local
+    restart: unless-stopped
