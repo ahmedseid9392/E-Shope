@@ -11,6 +11,7 @@ export const productSchema = z.object({
   sale_price: z.coerce.number().nonnegative().optional().or(z.literal("")).optional(),
   stock: z.coerce.number().int().nonnegative("Stock must be 0 or more"),
   category_id: z.string().uuid().optional().or(z.literal("")).optional(),
+  image_url: z.string().url().optional().or(z.literal("")).optional(),
   is_active: z.coerce.boolean().default(true),
 });
 

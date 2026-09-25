@@ -164,6 +164,7 @@ export async function createProduct(
     sale_price: formData.get("sale_price") || undefined,
     stock: formData.get("stock"),
     category_id: formData.get("category_id") || undefined,
+    image_url: formData.get("image_url") || undefined,
     is_active: formData.get("is_active") === "on",
   });
 
@@ -171,10 +172,13 @@ export async function createProduct(
     return { error: parsed.error.errors[0]?.message ?? "Invalid input." };
   }
 
+  const { image_url, ...rest } = parsed.data;
+
   const { error } = await supabase.from("products").insert({
-    ...parsed.data,
+    ...rest,
     sale_price: parsed.data.sale_price || null,
     category_id: parsed.data.category_id || null,
+    image_urls: image_url ? [image_url] : [],
   });
 
   if (error) return { error: error.message };

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { formatPrice } from "@/lib/format";
 
 type Product = {
@@ -8,10 +9,12 @@ type Product = {
   price: number;
   sale_price: number | null;
   stock: number;
+  image_urls?: string[] | null;
 };
 
 export function ProductCard({ product }: { product: Product }) {
   const onSale = product.sale_price !== null && product.sale_price < product.price;
+  const image = product.image_urls?.[0];
 
   return (
     <Link
@@ -19,6 +22,15 @@ export function ProductCard({ product }: { product: Product }) {
       className="group block rounded-2xl border border-line bg-surface p-4 transition hover:border-ink/30 hover:shadow-sm"
     >
       <div className="relative aspect-square overflow-hidden rounded-xl bg-bg">
+        {image && (
+          <Image
+            src={image}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 50vw, 25vw"
+            className="object-cover"
+          />
+        )}
         {onSale && (
           <span className="absolute left-2 top-2 rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-onaccent">
             Sale

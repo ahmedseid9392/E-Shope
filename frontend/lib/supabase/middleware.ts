@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { CookieOptions } from "@supabase/ssr";
 
-const CUSTOMER_PROTECTED_PREFIXES = ["/cart", "/checkout", "/orders"];
+const CUSTOMER_PROTECTED_PREFIXES = ["/cart", "/checkout", "/orders", "/account"];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
