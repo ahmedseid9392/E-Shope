@@ -16,7 +16,7 @@ export default async function AdminProductsPage() {
         <h1 className="font-display text-2xl font-bold text-ink">Products</h1>
         <Link
           href="/admin/products/new"
-          className="rounded bg-ink px-4 py-2 text-sm text-white hover:bg-ink/90"
+          className="rounded bg-accent px-4 py-2 text-sm text-onaccent hover:bg-accent/90"
         >
           Add product
         </Link>

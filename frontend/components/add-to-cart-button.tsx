@@ -10,7 +10,7 @@ export function AddToCartButton({ productId, disabled }: { productId: string; di
     <button
       disabled={disabled || isPending}
       onClick={() => startTransition(() => addToCart(productId, 1))}
-      className="rounded bg-ink px-4 py-2 text-sm text-white hover:bg-ink/90 disabled:opacity-50"
+      className="rounded bg-accent px-4 py-2 text-sm text-onaccent hover:bg-accent/90 disabled:opacity-50"
     >
       {disabled ? "Out of stock" : isPending ? "Adding..." : "Add to cart"}
     </button>

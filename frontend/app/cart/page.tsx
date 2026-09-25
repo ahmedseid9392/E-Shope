@@ -34,7 +34,7 @@ export default async function CartPage() {
             <span className="font-display text-lg font-bold text-ink">Total: {formatPrice(total)}</span>
             <Link
               href="/checkout"
-              className="rounded bg-ink px-6 py-2 text-white hover:bg-ink/90"
+              className="rounded bg-accent px-6 py-2 text-onaccent hover:bg-accent/90"
             >
               Checkout
             </Link>

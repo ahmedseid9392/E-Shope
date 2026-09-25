@@ -105,6 +105,28 @@ export async function getCategories() {
   return data ?? [];
 }
 
+/**
+ * Active products NOT in excludeIds — used to fill a "you might also like" section
+ * below search results, so a search always leaves the customer with more to browse
+ * instead of a dead end.
+ */
+export async function getOtherProducts(excludeIds: string[], limit = 8) {
+  const supabase = createClient();
+  let query = supabase
+    .from("products")
+    .select("*")
+    .eq("is_active", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (excludeIds.length > 0) {
+    query = query.not("id", "in", `(${excludeIds.join(",")})`);
+  }
+
+  const { data } = await query;
+  return data ?? [];
+}
+
 // ── Admin writes ─────────────────────────────────────────────────────────────
 
 async function requireAdmin() {

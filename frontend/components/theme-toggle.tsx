@@ -3,40 +3,49 @@
 import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
+  // Start unmounted-safe: the inline script in layout.tsx already set the
+  // correct class on <html> before hydration, so read it back rather than
+  // guessing (avoids a light/dark mismatch flash).
+  const [isDark, setIsDark] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const shouldUseDark =
-      savedTheme === "dark" ||
-      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    document.documentElement.classList.toggle("dark", shouldUseDark);
-    setIsDark(shouldUseDark);
+    setIsDark(document.documentElement.classList.contains("dark"));
   }, []);
 
-  function toggleTheme() {
-    const nextIsDark = !isDark;
-    document.documentElement.classList.toggle("dark", nextIsDark);
-    localStorage.setItem("theme", nextIsDark ? "dark" : "light");
-    setIsDark(nextIsDark);
+  function toggle() {
+    const next = !document.documentElement.classList.contains("dark");
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+    setIsDark(next);
+  }
+
+  if (isDark === null) {
+    // Render a fixed-size placeholder so the header doesn't shift on mount.
+    return <div className="h-8 w-8" />;
   }
 
   return (
     <button
-      type="button"
-      onClick={toggleTheme}
-      className="grid h-9 w-9 place-items-center rounded-full border border-line text-ink transition hover:border-accent hover:text-accent"
-      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      title={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      onClick={toggle}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className="flex h-8 w-8 items-center justify-center rounded-full border border-line text-ink transition hover:border-ink"
     >
       {isDark ? (
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path
+            d="M8 1v1.5M8 13.5V15M15 8h-1.5M2.5 8H1M12.7 3.3l-1 1M4.3 11.7l-1 1M12.7 12.7l-1-1M4.3 4.3l-1-1"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          />
+          <circle cx="8" cy="8" r="3.5" fill="currentColor" />
         </svg>
       ) : (
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.7 6.7 0 0 0 21 12.8Z" />
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path
+            d="M14 9.3A6 6 0 1 1 6.7 2a4.7 4.7 0 0 0 7.3 7.3Z"
+            fill="currentColor"
+          />
         </svg>
       )}
     </button>

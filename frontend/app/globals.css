@@ -4,48 +4,59 @@
 
 :root {
   --color-bg: 250 249 246;
-  --color-surface: 255 255 255;
   --color-ink: 27 31 59;
   --color-accent: 225 167 48;
   --color-line: 222 219 210;
   --color-muted: 107 111 118;
+  --color-on-accent: 27 31 59;
+  --color-surface: 255 255 255;
 }
 
 .dark {
-  --color-bg: 15 18 35;
-  --color-surface: 28 33 57;
-  --color-ink: 244 241 234;
-  --color-accent: 244 186 66;
-  --color-line: 56 60 82;
-  --color-muted: 181 184 196;
-}
-
-html {
-  background: rgb(var(--color-bg));
-}
-
-body {
-  transition: background-color 200ms ease, color 200ms ease;
+  --color-bg: 15 17 32;
+  --color-ink: 245 244 240;
+  --color-accent: 232 179 74;
+  --color-line: 45 49 74;
+  --color-muted: 158 162 176;
+  --color-on-accent: 22 20 12;
+  --color-surface: 24 27 48;
 }
 
 ::selection {
   background-color: rgb(var(--color-accent));
-  color: rgb(var(--color-bg));
-}
-@layer base {
-  input:not([type="checkbox"]):not([type="radio"]),
-  select,
-  textarea {
-    background-color: rgb(var(--color-surface));
-    color: rgb(var(--color-ink));
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    color: rgb(var(--color-muted));
-  }
+  color: rgb(var(--color-ink));
 }
 
-.dark {
-  color-scheme: dark;
+body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: floaty 4s ease-in-out infinite;
+}
+.animate-float-slow {
+  animation: floaty 5.5s ease-in-out infinite;
+  animation-delay: 0.6s;
+}
+.animate-float-fast {
+  animation: floaty 3.4s ease-in-out infinite;
+  animation-delay: 1.1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-float-slow,
+  .animate-float-fast {
+    animation: none;
+  }
 }

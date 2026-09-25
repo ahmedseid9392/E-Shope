@@ -15,7 +15,7 @@ const ITEMS = [
 
 export function TrustStrip() {
   return (
-    <section className="border-y border-line bg-white/40">
+    <section className="border-y border-line bg-surface/60">
       <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 sm:grid-cols-3">
         {ITEMS.map((item) => (
           <div key={item.title}>

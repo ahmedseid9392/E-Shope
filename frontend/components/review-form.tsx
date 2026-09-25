@@ -9,7 +9,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded bg-ink px-4 py-2 text-sm text-white disabled:opacity-50"
+      className="rounded bg-accent px-4 py-2 text-sm text-onaccent disabled:opacity-50"
     >
       {pending ? "Submitting..." : "Submit review"}
     </button>
@@ -28,7 +28,7 @@ export function ReviewForm({ productId }: { productId: string }) {
     <form action={formAction} className="space-y-3">
       <div>
         <label className="block text-sm font-medium">Rating</label>
-        <select name="rating" required className="mt-1 rounded border border-line px-3 py-2 text-sm">
+        <select name="rating" required className="mt-1 rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent">
           {[5, 4, 3, 2, 1].map((n) => (
             <option key={n} value={n}>
               {n} star{n > 1 ? "s" : ""}
@@ -41,7 +41,7 @@ export function ReviewForm({ productId }: { productId: string }) {
         <textarea
           name="comment"
           rows={3}
-          className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+          className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
         />
       </div>
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}

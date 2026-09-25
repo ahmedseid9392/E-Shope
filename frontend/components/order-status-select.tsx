@@ -13,7 +13,7 @@ export function OrderStatusSelect({ orderId, status }: { orderId: string; status
       defaultValue={status}
       disabled={isPending}
       onChange={(e) => startTransition(() => updateOrderStatus(orderId, e.target.value))}
-      className="rounded border border-line px-2 py-1 text-sm disabled:opacity-50"
+      className="rounded border border-line bg-surface px-2 py-1 text-sm text-ink disabled:opacity-50"
     >
       {STATUSES.map((s) => (
         <option key={s} value={s}>
