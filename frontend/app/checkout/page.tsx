@@ -9,7 +9,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded bg-ink py-2 text-white disabled:opacity-50"
+      className="w-full rounded bg-accent py-2 text-onaccent disabled:opacity-50"
     >
       {pending ? "Placing order..." : "Place order"}
     </button>
@@ -34,7 +34,7 @@ export default function CheckoutPage() {
           <input
             name="full_name"
             required
-            className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
         <div>
@@ -42,7 +42,7 @@ export default function CheckoutPage() {
           <input
             name="phone"
             required
-            className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
         <div>
@@ -50,14 +50,14 @@ export default function CheckoutPage() {
           <input
             name="address_line"
             required
-            className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
         <div>
           <label className="block text-sm font-medium">City</label>
           <input
             name="city"
-            className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
 

@@ -10,7 +10,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded bg-ink py-2 text-white transition hover:bg-ink/90 disabled:opacity-50"
+      className="w-full rounded bg-accent py-2 text-onaccent transition hover:bg-accent/90 disabled:opacity-50"
     >
       {pending ? "Creating account..." : "Sign up"}
     </button>
@@ -35,7 +35,7 @@ export default function SignupPage() {
             type="text"
             required
             autoComplete="name"
-            className="mt-1 w-full rounded border border-line px-3 py-2 focus:border-ink focus:outline-none"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
 
@@ -49,7 +49,7 @@ export default function SignupPage() {
             type="email"
             required
             autoComplete="email"
-            className="mt-1 w-full rounded border border-line px-3 py-2 focus:border-ink focus:outline-none"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
 
@@ -64,7 +64,7 @@ export default function SignupPage() {
             required
             minLength={6}
             autoComplete="new-password"
-            className="mt-1 w-full rounded border border-line px-3 py-2 focus:border-ink focus:outline-none"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
 

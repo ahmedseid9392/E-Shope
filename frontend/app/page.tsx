@@ -22,7 +22,7 @@ export default async function HomePage() {
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
                 href="/products"
-                className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition hover:bg-ink/90"
+                className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-onaccent transition hover:bg-accent/90"
               >
                 Shop all products
               </Link>
@@ -38,6 +38,16 @@ export default async function HomePage() {
           </div>
 
           <div className="mx-auto w-full max-w-sm md:max-w-none">
+            {/*
+              HeroGraphic is an original illustration (no stock photo licensing needed).
+              To swap in a real licensed product photo instead:
+              1. Buy/download the license, save the file as public/hero.jpg
+              2. Replace the line below with:
+                 import Image from "next/image";
+                 <Image src="/hero.jpg" alt="Products ready to ship" fill
+                        className="rounded-2xl object-cover" priority />
+                 (wrap it in a div with `relative aspect-square` instead of this one)
+            */}
             <HeroGraphic />
           </div>
         </div>

@@ -41,7 +41,7 @@ export default async function ProductDetailPage({
                 <span className="font-display text-xl font-bold text-ink">
                   {formatPrice(product.sale_price)}
                 </span>
-                <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-ink">
+                <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-onaccent">
                   Sale
                 </span>
               </>

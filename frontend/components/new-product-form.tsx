@@ -9,7 +9,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded bg-ink px-4 py-2 text-sm text-white disabled:opacity-50"
+      className="rounded bg-accent px-4 py-2 text-sm text-onaccent disabled:opacity-50"
     >
       {pending ? "Saving..." : "Create product"}
     </button>
@@ -26,7 +26,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
         <input
           name="name"
           required
-          className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+          className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
         />
       </div>
 
@@ -36,7 +36,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
           name="slug"
           required
           placeholder="e.g. sample-t-shirt"
-          className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+          className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
         />
       </div>
 
@@ -45,7 +45,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
         <textarea
           name="description"
           rows={3}
-          className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+          className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
         />
       </div>
 
@@ -57,7 +57,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
             type="number"
             step="0.01"
             required
-            className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
         <div>
@@ -66,7 +66,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
             name="sale_price"
             type="number"
             step="0.01"
-            className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
       </div>
@@ -78,14 +78,14 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
             name="stock"
             type="number"
             required
-            className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
         <div>
           <label className="block text-sm font-medium">Category</label>
           <select
             name="category_id"
-            className="mt-1 w-full rounded border border-line px-3 py-2 text-sm"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           >
             <option value="">None</option>
             {categories.map((c) => (

@@ -1,13 +1,12 @@
 export function Logo() {
   return (
     <span className="flex items-center gap-1.5 font-display text-xl font-extrabold tracking-tight text-ink">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
         <path
-          d="M3.5 10.1 10.1 3.5h6.1a2.3 2.3 0 0 1 2.3 2.3v6.1L11.9 18.5a2.3 2.3 0 0 1-3.3 0l-5.1-5.1a2.3 2.3 0 0 1 0-3.3Z"
-          fill="currentColor"
-          className="text-accent"
+          d="M2 8.5L8.5 2h5.5a2 2 0 0 1 2 2v5.5L9.5 16a2 2 0 0 1-2.8 0L2 10.8a2 2 0 0 1 0-2.3Z"
+          className="fill-accent"
         />
-        <circle cx="14.8" cy="7.2" r="1.7" fill="currentColor" className="text-bg" />
+        <circle cx="12" cy="6" r="1.4" className="fill-bg" />
       </svg>
       E-Shope
     </span>

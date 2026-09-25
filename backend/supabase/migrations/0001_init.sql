@@ -163,6 +163,15 @@ create policy "read order items via order" on order_items
     )
   );
 
+create policy "insert own order items" on order_items
+  for insert with check (
+    exists (
+      select 1 from orders
+      where orders.id = order_items.order_id
+        and orders.user_id = auth.uid()
+    )
+  );
+
 -- payments: no client policies at all — server only, via service role key.
 
 -- reviews: public read; insert restricted to users with a delivered order for that product
