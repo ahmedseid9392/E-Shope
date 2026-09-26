@@ -11,13 +11,15 @@ export async function SiteHeader() {
   } = await supabase.auth.getUser();
 
   let isAdmin = false;
+  let avatarUrl: string | null = null;
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("is_admin")
+      .select("is_admin, avatar_url")
       .eq("id", user.id)
       .single();
     isAdmin = Boolean(profile?.is_admin);
+    avatarUrl = profile?.avatar_url ?? null;
   }
 
   return (
@@ -44,6 +46,20 @@ export async function SiteHeader() {
                   Admin
                 </Link>
               )}
+              <Link href="/account" className="flex items-center" aria-label="Your account">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- external Cloudinary URL
+                  <img
+                    src={avatarUrl}
+                    alt=""
+                    className="h-7 w-7 rounded-full border border-line object-cover"
+                  />
+                ) : (
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-line text-xs font-semibold text-ink">
+                    {(user.email ?? "?").charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </Link>
               <form action={signOut}>
                 <button type="submit" className="text-muted transition hover:text-ink">
                   Sign out

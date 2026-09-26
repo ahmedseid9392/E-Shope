@@ -8,7 +8,7 @@ don't start Phase 4 with Phase 2 half-done.
   placeholder home page), `.env.example` filled in, Supabase project created (or `supabase start`
   locally).
 
-- [ ] **Phase 2 — Database + migrations**
+- [x] **Phase 2 — Database + migrations**
   Apply `backend/supabase/migrations/0001_init.sql`, run `seed.sql`, confirm RLS policies work
   (try querying another user's cart/orders and confirm it's denied). Reference: `docs/database.md`.
 

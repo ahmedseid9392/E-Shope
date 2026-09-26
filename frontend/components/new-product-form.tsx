@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { createProduct } from "@/lib/actions/products";
+import { ImageUploader } from "@/components/image-uploader";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -18,9 +20,18 @@ function SubmitButton() {
 
 export function NewProductForm({ categories }: { categories: { id: string; name: string }[] }) {
   const [state, formAction] = useFormState(createProduct, undefined);
+  const [imageUrl, setImageUrl] = useState("");
 
   return (
     <form action={formAction} className="mt-6 max-w-lg space-y-4">
+      <div>
+        <label className="block text-sm font-medium">Product image</label>
+        <div className="mt-1">
+          <ImageUploader folder="products" onUploaded={setImageUrl} />
+        </div>
+        <input type="hidden" name="image_url" value={imageUrl} />
+      </div>
+
       <div>
         <label className="block text-sm font-medium">Name</label>
         <input

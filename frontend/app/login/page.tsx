@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
 import { signIn } from "@/lib/actions/auth";
+import { GoogleSignInButton } from "@/components/google-signin-button";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -23,6 +24,16 @@ export default function LoginPage() {
   return (
     <main className="mx-auto max-w-sm px-4 py-16">
       <h1 className="font-display text-2xl font-bold text-ink">Log in</h1>
+
+      <div className="mt-6">
+        <GoogleSignInButton />
+      </div>
+
+      <div className="mt-6 flex items-center gap-3 text-xs text-muted">
+        <div className="h-px flex-1 bg-line" />
+        or
+        <div className="h-px flex-1 bg-line" />
+      </div>
 
       <form action={formAction} className="mt-6 space-y-4">
         <div>

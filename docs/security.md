@@ -50,6 +50,20 @@ create policy "own orders" on orders
   sends a price that gets trusted directly.
 - Amount sent to Chapa is always in ETB and computed server-side from `order.total`.
 
+## OAuth (Google) and Image Uploads
+- Google sign-in uses Supabase Auth's OAuth flow: `signInWithOAuth` is called server-side
+  (Server Action), which returns a redirect URL to Google; `app/auth/callback/route.ts` exchanges
+  the returned code for a session. No Google client secret ever touches the frontend — it's
+  configured entirely in the Supabase dashboard (Authentication → Providers → Google).
+- Product and profile images upload directly from the browser to Cloudinary using an **unsigned
+  upload preset** — no Cloudinary API secret exists anywhere in this codebase. The preset itself
+  (configured in the Cloudinary dashboard) restricts allowed formats, max file size, and folder,
+  since an unsigned preset is inherently more open than a signed upload — the restrictions live
+  server-side in Cloudinary's config, not in application code.
+- The resulting Cloudinary URL is just a string stored in `products.image_urls` or
+  `profiles.avatar_url` — writes to those columns still go through the same RLS policies as
+  everything else (admin-only for products, owner-only for a profile's own avatar).
+
 ## General
 - All admin routes double-check `is_admin` server-side on every request (not just hidden in the UI).
 - Environment variables (`SUPABASE_SERVICE_ROLE_KEY`, `CHAPA_SECRET_KEY`)

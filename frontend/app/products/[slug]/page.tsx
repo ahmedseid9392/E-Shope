@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   getProductBySlug,
@@ -27,7 +28,18 @@ export default async function ProductDetailPage({
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="aspect-square rounded-lg bg-bg" />
+        <div className="relative aspect-square overflow-hidden rounded-lg bg-bg">
+          {product.image_urls?.[0] && (
+            <Image
+              src={product.image_urls[0]}
+              alt={product.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority
+            />
+          )}
+        </div>
 
         <div>
           <h1 className="font-display text-2xl font-bold text-ink">{product.name}</h1>

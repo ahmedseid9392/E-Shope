@@ -67,3 +67,19 @@ export async function signOut() {
   revalidatePath("/", "layout");
   redirect("/login");
 }
+
+export async function signInWithGoogle(formData: FormData) {
+  const redirectPath = String(formData.get("redirectPath") ?? "/");
+  const supabase = createClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${siteUrl}/auth/callback?redirectTo=${encodeURIComponent(redirectPath)}`,
+    },
+  });
+
+  if (error) throw new Error(error.message);
+  if (data.url) redirect(data.url);
+}
