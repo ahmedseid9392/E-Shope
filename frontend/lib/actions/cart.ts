@@ -24,6 +24,27 @@ export async function getCart() {
   return data ?? [];
 }
 
+/**
+ * Number of distinct line items in the current user's cart — used for the
+ * badge next to the "Cart" link in the header. Cheap head-only count query,
+ * safe to call on every page render via the site header.
+ */
+export async function getCartCount() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return 0;
+
+  const { count, error } = await supabase
+    .from("cart_items")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  if (error) throw new Error(error.message);
+  return count ?? 0;
+}
+
 export async function addToCart(productId: string, quantity = 1) {
   const { supabase, user } = await requireUser();
 

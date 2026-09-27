@@ -6,9 +6,11 @@ import {
 } from "@/lib/actions/products";
 import { getReviews } from "@/lib/actions/reviews";
 import { formatPrice } from "@/lib/format";
+import { isOnSale } from "@/lib/sale";
 import { ProductCard } from "@/components/product-card";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { ReviewForm } from "@/components/review-form";
+import { StarRating } from "@/components/star-rating";
 
 export default async function ProductDetailPage({
   params,
@@ -23,7 +25,7 @@ export default async function ProductDetailPage({
     getReviews(product.id),
   ]);
 
-  const onSale = product.sale_price !== null && product.sale_price < product.price;
+  const onSale = isOnSale(product);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
@@ -95,7 +97,7 @@ export default async function ProductDetailPage({
           {reviews.map((r: any) => (
             <div key={r.id} className="border-b border-line pb-3">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <span>{"★".repeat(r.rating)}</span>
+                <StarRating rating={r.rating} />
                 <span className="text-muted">
                   {r.profiles?.full_name ?? "Anonymous"}
                 </span>

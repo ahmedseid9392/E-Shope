@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { productSchema } from "@/lib/validations/product";
+import { isOnSale } from "@/lib/sale";
 
 export type ProductListParams = {
   q?: string;
@@ -88,15 +89,18 @@ export async function getNewArrivals(limit = 8) {
 
 export async function getDeals(limit = 8) {
   const supabase = createClient();
-  const nowIso = new Date().toISOString();
+  // Fetch broad candidates (has a sale_price at all), then apply the full
+  // sale-window check in code — combining "starts_at is null OR in the past"
+  // AND "ends_at is null OR in the future" as a single Postgres filter gets
+  // unreadable fast, and this list is small enough that it doesn't matter.
   const { data } = await supabase
     .from("products")
     .select("*")
     .eq("is_active", true)
     .not("sale_price", "is", null)
-    .or(`sale_ends_at.is.null,sale_ends_at.gte.${nowIso}`)
-    .limit(limit);
-  return data ?? [];
+    .order("created_at", { ascending: false });
+
+  return (data ?? []).filter((p) => isOnSale(p)).slice(0, limit);
 }
 
 export async function getCategories() {
@@ -148,7 +152,7 @@ async function requireAdmin() {
   return supabase;
 }
 
-export type ProductActionState = { error?: string } | undefined;
+export type ProductActionState = { error?: string; success?: boolean } | undefined;
 
 export async function createProduct(
   _prevState: ProductActionState,
@@ -162,6 +166,8 @@ export async function createProduct(
     description: formData.get("description"),
     price: formData.get("price"),
     sale_price: formData.get("sale_price") || undefined,
+    sale_starts_at: formData.get("sale_starts_at") || undefined,
+    sale_ends_at: formData.get("sale_ends_at") || undefined,
     stock: formData.get("stock"),
     category_id: formData.get("category_id") || undefined,
     image_url: formData.get("image_url") || undefined,
@@ -176,8 +182,10 @@ export async function createProduct(
 
   const { error } = await supabase.from("products").insert({
     ...rest,
-    sale_price: parsed.data.sale_price || null,
-    category_id: parsed.data.category_id || null,
+    sale_price: rest.sale_price || null,
+    sale_starts_at: rest.sale_starts_at || null,
+    sale_ends_at: rest.sale_ends_at || null,
+    category_id: rest.category_id || null,
     image_urls: image_url ? [image_url] : [],
   });
 
@@ -188,29 +196,60 @@ export async function createProduct(
   redirect("/admin/products");
 }
 
-export async function updateProduct(id: string, formData: FormData) {
+/** Admin-only lookup by id — unlike getProductBySlug, this ignores is_active
+ *  so an admin can still open and re-enable a deactivated product. */
+export async function getProductByIdForAdmin(id: string) {
+  const supabase = await requireAdmin();
+  const { data, error } = await supabase.from("products").select("*").eq("id", id).single();
+  if (error) return null;
+  return data;
+}
+
+export async function updateProduct(
+  id: string,
+  _prevState: ProductActionState,
+  formData: FormData
+): Promise<ProductActionState> {
   const supabase = await requireAdmin();
 
-  const parsed = productSchema.partial().safeParse({
-    name: formData.get("name") ?? undefined,
-    slug: formData.get("slug") ?? undefined,
-    description: formData.get("description") ?? undefined,
-    price: formData.get("price") ?? undefined,
+  const parsed = productSchema.safeParse({
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    description: formData.get("description"),
+    price: formData.get("price"),
     sale_price: formData.get("sale_price") || undefined,
-    stock: formData.get("stock") ?? undefined,
+    sale_starts_at: formData.get("sale_starts_at") || undefined,
+    sale_ends_at: formData.get("sale_ends_at") || undefined,
+    stock: formData.get("stock"),
     category_id: formData.get("category_id") || undefined,
+    image_url: formData.get("image_url") || undefined,
     is_active: formData.get("is_active") === "on",
   });
 
   if (!parsed.success) {
-    throw new Error(parsed.error.errors[0]?.message ?? "Invalid input.");
+    return { error: parsed.error.errors[0]?.message ?? "Invalid input." };
   }
 
-  const { error } = await supabase.from("products").update(parsed.data).eq("id", id);
-  if (error) throw new Error(error.message);
+  const { image_url, ...rest } = parsed.data;
+
+  const { error } = await supabase
+    .from("products")
+    .update({
+      ...rest,
+      sale_price: rest.sale_price || null,
+      sale_starts_at: rest.sale_starts_at || null,
+      sale_ends_at: rest.sale_ends_at || null,
+      category_id: rest.category_id || null,
+      ...(image_url ? { image_urls: [image_url] } : {}),
+    })
+    .eq("id", id);
+
+  if (error) return { error: error.message };
 
   revalidatePath("/admin/products");
   revalidatePath("/products");
+  revalidatePath(`/products/${parsed.data.slug}`);
+  return { success: true };
 }
 
 export async function deleteProduct(id: string) {

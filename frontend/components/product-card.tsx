@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "@/lib/format";
+import { isOnSale } from "@/lib/sale";
 
 type Product = {
   id: string;
@@ -8,12 +9,14 @@ type Product = {
   slug: string;
   price: number;
   sale_price: number | null;
+  sale_starts_at?: string | null;
+  sale_ends_at?: string | null;
   stock: number;
   image_urls?: string[] | null;
 };
 
 export function ProductCard({ product }: { product: Product }) {
-  const onSale = product.sale_price !== null && product.sale_price < product.price;
+  const onSale = isOnSale(product);
   const image = product.image_urls?.[0];
 
   return (

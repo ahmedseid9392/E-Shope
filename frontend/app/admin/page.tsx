@@ -1,40 +1,62 @@
-import { createClient } from "@/lib/supabase/server";
+import { DollarSign, ShoppingBag, Package, Users, Clock } from "lucide-react";
+import { getAdminDashboardData } from "@/lib/actions/admin";
+import { formatPrice } from "@/lib/format";
+import { StatCard } from "@/components/admin/stat-card";
+import { RevenueChart } from "@/components/admin/revenue-chart";
+import { RecentOrders } from "@/components/admin/recent-orders";
+import { LowStockList } from "@/components/admin/low-stock-list";
 
-export default async function AdminPage() {
-  // Middleware already blocks non-admins from reaching this route, but we
-  // re-check here too — never rely on middleware alone for authorization.
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin, full_name")
-    .eq("id", user!.id)
-    .single();
-
-  if (!profile?.is_admin) {
-    return (
-      <main className="mx-auto max-w-5xl px-4 py-16">
-        <p>Not authorized.</p>
-      </main>
-    );
-  }
+export default async function AdminDashboardPage() {
+  const { profile, stats, revenueByDay, recentOrders, lowStockProducts } =
+    await getAdminDashboardData();
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-16">
-      <h1 className="font-display text-2xl font-bold text-ink">Admin dashboard</h1>
-      <p className="mt-2 text-muted">Signed in as {profile.full_name ?? user!.email}.</p>
+    <div>
+      <h1 className="font-display text-2xl font-bold text-ink">Dashboard</h1>
+      <p className="mt-1 text-muted">
+        Welcome back, {profile.full_name ?? profile.email}. Here's what's happening in your store.
+      </p>
 
-      <div className="mt-6 flex gap-4">
-        <a href="/admin/products" className="rounded border border-line px-4 py-2 text-sm hover:border-ink">
-          Manage products
-        </a>
-        <a href="/admin/orders" className="rounded border border-line px-4 py-2 text-sm hover:border-ink">
-          Manage orders
-        </a>
+      <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+        <StatCard
+          icon={DollarSign}
+          label="Revenue"
+          value={formatPrice(stats.totalRevenue)}
+          hint="Paid, shipped & delivered"
+        />
+        <StatCard icon={ShoppingBag} label="Orders" value={String(stats.totalOrders)} />
+        <StatCard
+          icon={Clock}
+          label="Pending orders"
+          value={String(stats.pendingOrders)}
+          tone={stats.pendingOrders > 0 ? "warning" : "default"}
+        />
+        <StatCard icon={Package} label="Active products" value={String(stats.totalProducts)} />
+        <StatCard icon={Users} label="Customers" value={String(stats.totalCustomers)} />
       </div>
-    </main>
+
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="rounded-xl border border-line bg-surface p-5 lg:col-span-2">
+          <h2 className="font-display text-lg font-bold text-ink">Revenue, last 14 days</h2>
+          <div className="mt-4">
+            <RevenueChart data={revenueByDay} />
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-line bg-surface p-5">
+          <h2 className="font-display text-lg font-bold text-ink">Low stock</h2>
+          <div className="mt-2">
+            <LowStockList products={lowStockProducts} />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-xl border border-line bg-surface p-5">
+        <h2 className="font-display text-lg font-bold text-ink">Recent activity</h2>
+        <div className="mt-2">
+          <RecentOrders orders={recentOrders as any} />
+        </div>
+      </div>
+    </div>
   );
 }

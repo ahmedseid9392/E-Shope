@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/lib/actions/auth";
+import { getCartCount } from "@/lib/actions/cart";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -12,14 +13,19 @@ export async function SiteHeader() {
 
   let isAdmin = false;
   let avatarUrl: string | null = null;
+  let cartCount = 0;
   if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_admin, avatar_url")
-      .eq("id", user.id)
-      .single();
+    const [{ data: profile }, count] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("is_admin, avatar_url")
+        .eq("id", user.id)
+        .single(),
+      getCartCount(),
+    ]);
     isAdmin = Boolean(profile?.is_admin);
     avatarUrl = profile?.avatar_url ?? null;
+    cartCount = count;
   }
 
   return (
@@ -35,8 +41,16 @@ export async function SiteHeader() {
           </Link>
           {user ? (
             <>
-              <Link href="/cart" className="transition hover:text-accent">
+              <Link href="/cart" className="relative flex items-center transition hover:text-accent">
                 Cart
+                {cartCount > 0 && (
+                  <span
+                    className="absolute -right-3 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold leading-none text-onaccent"
+                    aria-label={`${cartCount} item${cartCount === 1 ? "" : "s"} in cart`}
+                  >
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
               </Link>
               <Link href="/orders" className="transition hover:text-accent">
                 Orders

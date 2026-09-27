@@ -3,47 +3,50 @@
 Build in this order. Each phase should be a working, committed state before moving to the next —
 don't start Phase 4 with Phase 2 half-done.
 
-- [ ] **Phase 1 — Project setup**
-  Repo scaffold (this structure), `frontend/` installs and runs (`npm run dev` shows the
-  placeholder home page), `.env.example` filled in, Supabase project created (or `supabase start`
-  locally).
+- [x] **Phase 1 — Project setup**
+  Repo scaffold, `frontend/` runs (`npm run dev`), Supabase project provisioned (hosted), `.env.local`
+  configured.
 
 - [x] **Phase 2 — Database + migrations**
-  Apply `backend/supabase/migrations/0001_init.sql`, run `seed.sql`, confirm RLS policies work
-  (try querying another user's cart/orders and confirm it's denied). Reference: `docs/database.md`.
+  `0001_init.sql` through `0004_avatar_and_oauth.sql` applied. RLS verified working (order_items
+  insert gap found and fixed via `0003`). Reference: `docs/database.md`.
 
 - [x] **Phase 3 — Authentication + authorization**
-  Signup/login/logout via Supabase Auth (`app/login`, `app/signup`, `lib/actions/auth.ts`).
-  `middleware.ts` redirects unauthenticated users away from `/cart`, `/checkout`, `/orders`, and
-  non-admins away from `/admin`; each protected page also re-checks server-side. A DB trigger
-  (`0002_handle_new_user.sql`) auto-creates the `profiles` row on signup. Reference: `docs/security.md`.
+  Signup/login/logout via Supabase Auth, plus Google OAuth (`app/auth/callback`,
+  `lib/actions/auth.ts` → `signInWithGoogle`). `middleware.ts` gates `/cart`, `/checkout`,
+  `/orders`, `/account`, and `/admin`; each protected page re-checks server-side. Profile row
+  auto-created on signup (including avatar from Google when available). Reference:
+  `docs/security.md`.
 
 - [x] **Phase 4 — Core backend modules**
-  Server Actions for: products (public list/filter/search + admin CRUD via soft-delete), cart
-  (add/update/remove), orders (create pending order from cart, list/detail, admin status
-  update), reviews (create if delivered, list), search (log + recent searches). Minimal UI
-  wired up alongside each so they're testable now rather than blind. Payment (Chapa) is
-  intentionally not wired into checkout yet — orders are created as `pending`; Phase 8 adds the
-  real payment step. Reference: `docs/api.md`, `docs/requirements.md`.
+  Server Actions for products (list/filter/search + admin CRUD), cart, orders (pending-order
+  creation, list/detail, admin status update), reviews (delivered-only), search (log + recent),
+  and profile updates. Payment is intentionally still a gap here — see Phase 8.
+  Reference: `docs/api.md`, `docs/requirements.md`.
 
 - [ ] **Phase 5 — API documentation**
-  Once real routes exist, verify `docs/api.md` matches what was actually built (params, response
-  shapes, error format) and correct any drift.
+  `docs/api.md` predates the live-search rework, image upload flow, and Google OAuth — needs a
+  pass to match what's actually built (params, response shapes, error format).
 
-- [ ] **Phase 6 — Frontend foundation**
-  Layout, navigation, design tokens/Tailwind setup, shared components (product card, price
-  display with sale-price handling, button/input primitives). Reference: `docs/architecture.md`,
-  `frontend/README.md`.
+- [x] **Phase 6 — Frontend foundation**
+  Design system in place: 4-color token set (light + dark, CSS-variable driven), Bricolage
+  Grotesque + Work Sans, dark/light toggle with no-flash init, header/footer, product card,
+  consistent input/button styling across the app. Reference: `docs/architecture.md`.
 
-- [ ] **Phase 7 — Frontend feature implementation**
-  Wire up every page in `docs/requirements.md`'s use-cases against Phase 4's backend: product
-  listing/search/filter, product detail + related products, cart, order history, reviews,
-  admin dashboard, new arrivals/deals sections.
+- [x] **Phase 7 — Frontend feature implementation**
+  Product listing with live search/filter, product detail + related products + reviews (real
+  star icons), cart, order history/detail with status stepper, admin dashboard (products +
+  orders), new arrivals/deals (both respect scheduled sale windows now, not just "has a
+  sale_price"), image upload (Cloudinary) for products and profile avatars, full admin product
+  CRUD including edit (was create + soft-delete only), scheduled discounts with start/end dates.
+  Icons (cart, edit, delete, star rating) via lucide-react. Remaining P1/P2, not blockers:
+  autocomplete suggestions and trending searches.
 
 - [ ] **Phase 8 — Integration**
-  Chapa checkout end-to-end: initialize → redirect → webhook → server-side verify → mark paid →
-  decrement stock → send confirmation email. Test with Chapa sandbox. Reference: `docs/requirements.md`
-  (checkout flow), `docs/security.md`.
+  The actual gap now: Chapa checkout end-to-end — initialize → redirect → webhook →
+  server-side verify → mark paid → decrement stock → send confirmation email. Right now
+  checkout creates a `pending` order and stops there with no real payment step. This is the
+  next real milestone. Reference: `docs/requirements.md` (checkout flow), `docs/security.md`.
 
 - [ ] **Phase 9 — Testing**
   Unit tests for utilities/schemas, integration tests for Server Actions + RLS, Playwright E2E

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { Trash2 } from "lucide-react";
 import { deleteProduct } from "@/lib/actions/products";
 
 export function DeleteProductButton({ id }: { id: string }) {
@@ -14,8 +15,9 @@ export function DeleteProductButton({ id }: { id: string }) {
           startTransition(() => deleteProduct(id));
         }
       }}
-      className="text-sm text-muted hover:text-red-600 disabled:opacity-50"
+      className="flex items-center gap-1 text-muted hover:text-red-600 disabled:opacity-50"
     >
+      <Trash2 size={14} />
       {isPending ? "Removing..." : "Deactivate"}
     </button>
   );

@@ -6,7 +6,7 @@ export default async function AdminOrdersPage() {
   const orders = await getAllOrdersForAdmin();
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-16">
+    <div>
       <h1 className="font-display text-2xl font-bold text-ink">Orders</h1>
 
       <table className="mt-6 w-full text-sm">
@@ -35,6 +35,6 @@ export default async function AdminOrdersPage() {
           ))}
         </tbody>
       </table>
-    </main>
+    </div>
   );
 }
