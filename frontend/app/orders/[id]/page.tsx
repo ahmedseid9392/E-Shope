@@ -56,6 +56,12 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           <div key={item.id} className="flex justify-between py-3">
             <span>
               {item.product?.name ?? "Product"} × {item.quantity}
+              {(item.color || item.size) && (
+                <span className="text-muted">
+                  {" "}
+                  ({[item.color, item.size].filter(Boolean).join(", ")})
+                </span>
+              )}
             </span>
             <span>{formatPrice(item.price_at_purchase * item.quantity)}</span>
           </div>

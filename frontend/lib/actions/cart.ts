@@ -17,7 +17,9 @@ export async function getCart() {
 
   const { data, error } = await supabase
     .from("cart_items")
-    .select("id, quantity, product:products(id, name, slug, price, sale_price, stock, image_urls)")
+    .select(
+      "id, quantity, color, size, product:products(id, name, slug, price, sale_price, stock, image_urls)"
+    )
     .eq("user_id", user.id);
 
   if (error) throw new Error(error.message);
@@ -45,16 +47,26 @@ export async function getCartCount() {
   return count ?? 0;
 }
 
-export async function addToCart(productId: string, quantity = 1) {
+export async function addToCart(
+  productId: string,
+  quantity = 1,
+  options?: { color?: string | null; size?: string | null }
+) {
   const { supabase, user } = await requireUser();
+  const color = options?.color ?? null;
+  const size = options?.size ?? null;
 
-  // upsert-style: if the row exists, bump quantity; otherwise insert.
-  const { data: existing } = await supabase
+  // upsert-style: if a line for this exact product+color+size already
+  // exists, bump quantity; otherwise insert a new line. Different
+  // color/size choices for the same product are kept as separate lines.
+  let existingQuery = supabase
     .from("cart_items")
     .select("id, quantity")
     .eq("user_id", user.id)
-    .eq("product_id", productId)
-    .maybeSingle();
+    .eq("product_id", productId);
+  existingQuery = color ? existingQuery.eq("color", color) : existingQuery.is("color", null);
+  existingQuery = size ? existingQuery.eq("size", size) : existingQuery.is("size", null);
+  const { data: existing } = await existingQuery.maybeSingle();
 
   if (existing) {
     const { error } = await supabase
@@ -65,7 +77,7 @@ export async function addToCart(productId: string, quantity = 1) {
   } else {
     const { error } = await supabase
       .from("cart_items")
-      .insert({ user_id: user.id, product_id: productId, quantity });
+      .insert({ user_id: user.id, product_id: productId, quantity, color, size });
     if (error) throw new Error(error.message);
   }
 

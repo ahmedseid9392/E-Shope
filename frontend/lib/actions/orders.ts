@@ -59,7 +59,7 @@ export async function createPendingOrderFromCart(shippingAddress: Record<string,
 
   const { data: cartItems, error: cartError } = await supabase
     .from("cart_items")
-    .select("quantity, product:products(id, price, sale_price, stock, name)")
+    .select("quantity, color, size, product:products(id, price, sale_price, stock, name)")
     .eq("user_id", user.id);
 
   if (cartError) throw new Error(cartError.message);
@@ -94,6 +94,8 @@ export async function createPendingOrderFromCart(shippingAddress: Record<string,
     product_id: item.product.id,
     quantity: item.quantity,
     price_at_purchase: item.product.sale_price ?? item.product.price,
+    color: item.color ?? null,
+    size: item.size ?? null,
   }));
 
   const { error: itemsError } = await supabase.from("order_items").insert(orderItems);

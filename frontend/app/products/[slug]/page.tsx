@@ -5,10 +5,12 @@ import {
   getRelatedProducts,
 } from "@/lib/actions/products";
 import { getReviews } from "@/lib/actions/reviews";
+import { getWishlistIds } from "@/lib/actions/wishlist";
 import { formatPrice } from "@/lib/format";
 import { isOnSale } from "@/lib/sale";
 import { ProductCard } from "@/components/product-card";
-import { AddToCartButton } from "@/components/add-to-cart-button";
+import { ProductOptions } from "@/components/product-options";
+import { LikeButton } from "@/components/like-button";
 import { ReviewForm } from "@/components/review-form";
 import { StarRating } from "@/components/star-rating";
 
@@ -20,10 +22,12 @@ export default async function ProductDetailPage({
   const product = await getProductBySlug(params.slug);
   if (!product) notFound();
 
-  const [related, reviews] = await Promise.all([
+  const [related, reviews, likedIds] = await Promise.all([
     getRelatedProducts(product.category_id, product.id),
     getReviews(product.id),
+    getWishlistIds(),
   ]);
+  const liked = new Set(likedIds);
 
   const onSale = isOnSale(product);
 
@@ -41,6 +45,9 @@ export default async function ProductDetailPage({
               priority
             />
           )}
+          <div className="absolute right-3 top-3">
+            <LikeButton productId={product.id} initialLiked={liked.has(product.id)} size={20} />
+          </div>
         </div>
 
         <div>
@@ -71,7 +78,12 @@ export default async function ProductDetailPage({
           </p>
 
           <div className="mt-6">
-            <AddToCartButton productId={product.id} disabled={product.stock === 0} />
+            <ProductOptions
+              productId={product.id}
+              colors={product.colors ?? []}
+              sizes={product.sizes ?? []}
+              disabled={product.stock === 0}
+            />
           </div>
         </div>
       </div>
@@ -81,7 +93,7 @@ export default async function ProductDetailPage({
           <h2 className="font-display text-lg font-bold text-ink">Related products</h2>
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {related.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} liked={liked.has(p.id)} />
             ))}
           </div>
         </section>

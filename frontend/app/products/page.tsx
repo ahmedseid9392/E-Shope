@@ -1,5 +1,6 @@
 import { listProducts, getCategories, getOtherProducts } from "@/lib/actions/products";
 import { logSearch, getRecentSearches } from "@/lib/actions/search";
+import { getWishlistIds } from "@/lib/actions/wishlist";
 import { ProductCard } from "@/components/product-card";
 import { ProductFilters } from "@/components/product-filters";
 
@@ -14,7 +15,7 @@ export default async function ProductsPage({
     await logSearch(q);
   }
 
-  const [products, categories, recentSearches] = await Promise.all([
+  const [products, categories, recentSearches, likedIds] = await Promise.all([
     listProducts({
       q,
       category,
@@ -22,7 +23,9 @@ export default async function ProductsPage({
     }),
     getCategories(),
     getRecentSearches(),
+    getWishlistIds(),
   ]);
+  const liked = new Set(likedIds);
 
   // When there's an active text search, always leave the customer with more to
   // browse — whether or not the search matched anything.
@@ -47,7 +50,7 @@ export default async function ProductsPage({
           {products.length > 0 && (
             <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} liked={liked.has(product.id)} />
               ))}
             </div>
           )}
@@ -59,7 +62,7 @@ export default async function ProductsPage({
               </h2>
               <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                 {otherProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard key={product.id} product={product} liked={liked.has(product.id)} />
                 ))}
               </div>
             </section>
@@ -70,7 +73,7 @@ export default async function ProductsPage({
       ) : (
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} liked={liked.has(product.id)} />
           ))}
         </div>
       )}

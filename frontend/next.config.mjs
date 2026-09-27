@@ -11,8 +11,10 @@ const nextConfig = {
         hostname: "res.cloudinary.com",
       },
       {
+        // Placeholder product photos used by backend/supabase/seed.sql for
+        // local development — swap for real product photos in production.
         protocol: "https",
-        hostname: "res.cloudinary.com",
+        hostname: "picsum.photos",
       },
     ],
   },

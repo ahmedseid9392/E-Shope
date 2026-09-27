@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import { createReview, type ReviewActionState } from "@/lib/actions/reviews";
+import { StarRatingInput } from "@/components/star-rating-input";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -28,13 +29,9 @@ export function ReviewForm({ productId }: { productId: string }) {
     <form action={formAction} className="space-y-3">
       <div>
         <label className="block text-sm font-medium">Rating</label>
-        <select name="rating" required className="mt-1 rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent">
-          {[5, 4, 3, 2, 1].map((n) => (
-            <option key={n} value={n}>
-              {n} star{n > 1 ? "s" : ""}
-            </option>
-          ))}
-        </select>
+        <div className="mt-1">
+          <StarRatingInput />
+        </div>
       </div>
       <div>
         <label className="block text-sm font-medium">Comment</label>

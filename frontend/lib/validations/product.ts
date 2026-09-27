@@ -14,6 +14,9 @@ const productBaseSchema = z.object({
   stock: z.coerce.number().int().nonnegative("Stock must be 0 or more"),
   category_id: z.string().uuid().optional().or(z.literal("")).optional(),
   image_url: z.string().url().optional().or(z.literal("")).optional(),
+  // Comma-separated in the admin form, e.g. "Black, White, Navy".
+  colors: z.string().optional().default(""),
+  sizes: z.string().optional().default(""),
   is_active: z.coerce.boolean().default(true),
 });
 
@@ -36,3 +39,13 @@ export const productSchema = productBaseSchema
   );
 
 export type ProductInput = z.infer<typeof productBaseSchema>;
+
+/** "Black, White,  Navy" -> ["Black", "White", "Navy"] — used for the
+ *  comma-separated colors/sizes admin inputs. */
+export function parseListInput(value: string | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
+}

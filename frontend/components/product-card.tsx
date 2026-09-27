@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "@/lib/format";
 import { isOnSale } from "@/lib/sale";
+import { AddToCartButton } from "@/components/add-to-cart-button";
+import { LikeButton } from "@/components/like-button";
 
 type Product = {
   id: string;
@@ -15,7 +17,15 @@ type Product = {
   image_urls?: string[] | null;
 };
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  liked = false,
+}: {
+  product: Product;
+  /** Whether the current user has already liked this product — pass this in
+   *  from a page that fetched getWishlistIds() so the heart starts filled. */
+  liked?: boolean;
+}) {
   const onSale = isOnSale(product);
   const image = product.image_urls?.[0];
 
@@ -39,6 +49,14 @@ export function ProductCard({ product }: { product: Product }) {
             Sale
           </span>
         )}
+
+        <div className="absolute right-2 top-2">
+          <LikeButton productId={product.id} initialLiked={liked} size={16} />
+        </div>
+
+        <div className="absolute bottom-2 right-2">
+          <AddToCartButton productId={product.id} disabled={product.stock === 0} iconOnly />
+        </div>
       </div>
       <h3 className="mt-3 font-display font-semibold text-ink">{product.name}</h3>
       <div className="mt-1 flex items-center gap-2">

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { productSchema } from "@/lib/validations/product";
+import { productSchema, parseListInput } from "@/lib/validations/product";
 import { isOnSale } from "@/lib/sale";
 
 export type ProductListParams = {
@@ -171,6 +171,8 @@ export async function createProduct(
     stock: formData.get("stock"),
     category_id: formData.get("category_id") || undefined,
     image_url: formData.get("image_url") || undefined,
+    colors: formData.get("colors") || undefined,
+    sizes: formData.get("sizes") || undefined,
     is_active: formData.get("is_active") === "on",
   });
 
@@ -178,7 +180,7 @@ export async function createProduct(
     return { error: parsed.error.errors[0]?.message ?? "Invalid input." };
   }
 
-  const { image_url, ...rest } = parsed.data;
+  const { image_url, colors, sizes, ...rest } = parsed.data;
 
   const { error } = await supabase.from("products").insert({
     ...rest,
@@ -187,6 +189,8 @@ export async function createProduct(
     sale_ends_at: rest.sale_ends_at || null,
     category_id: rest.category_id || null,
     image_urls: image_url ? [image_url] : [],
+    colors: parseListInput(colors),
+    sizes: parseListInput(sizes),
   });
 
   if (error) return { error: error.message };
@@ -223,6 +227,8 @@ export async function updateProduct(
     stock: formData.get("stock"),
     category_id: formData.get("category_id") || undefined,
     image_url: formData.get("image_url") || undefined,
+    colors: formData.get("colors") || undefined,
+    sizes: formData.get("sizes") || undefined,
     is_active: formData.get("is_active") === "on",
   });
 
@@ -230,7 +236,7 @@ export async function updateProduct(
     return { error: parsed.error.errors[0]?.message ?? "Invalid input." };
   }
 
-  const { image_url, ...rest } = parsed.data;
+  const { image_url, colors, sizes, ...rest } = parsed.data;
 
   const { error } = await supabase
     .from("products")
@@ -240,6 +246,8 @@ export async function updateProduct(
       sale_starts_at: rest.sale_starts_at || null,
       sale_ends_at: rest.sale_ends_at || null,
       category_id: rest.category_id || null,
+      colors: parseListInput(colors),
+      sizes: parseListInput(sizes),
       ...(image_url ? { image_urls: [image_url] } : {}),
     })
     .eq("id", id);

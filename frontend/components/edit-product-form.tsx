@@ -38,6 +38,8 @@ type Product = {
   stock: number;
   category_id: string | null;
   image_urls: string[] | null;
+  colors?: string[] | null;
+  sizes?: string[] | null;
   is_active: boolean;
 };
 
@@ -165,6 +167,29 @@ export function EditProductForm({
               </option>
             ))}
           </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium">Colors (optional)</label>
+          <input
+            name="colors"
+            defaultValue={(product.colors ?? []).join(", ")}
+            placeholder="e.g. Black, White, Navy"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+          <p className="mt-1 text-xs text-muted">Comma-separated. Shown as choices on the product page.</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Sizes (optional)</label>
+          <input
+            name="sizes"
+            defaultValue={(product.sizes ?? []).join(", ")}
+            placeholder="e.g. S, M, L, XL"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+          <p className="mt-1 text-xs text-muted">Comma-separated.</p>
         </div>
       </div>
 

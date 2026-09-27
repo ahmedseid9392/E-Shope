@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { getNewArrivals, getDeals } from "@/lib/actions/products";
+import { getWishlistIds } from "@/lib/actions/wishlist";
 import { ProductCard } from "@/components/product-card";
 import { HeroGraphic } from "@/components/hero-graphic";
 import { TrustStrip } from "@/components/trust-strip";
 
 export default async function HomePage() {
-  const [newArrivals, deals] = await Promise.all([getNewArrivals(4), getDeals(4)]);
+  const [newArrivals, deals, likedIds] = await Promise.all([
+    getNewArrivals(4),
+    getDeals(4),
+    getWishlistIds(),
+  ]);
+  const liked = new Set(likedIds);
 
   return (
     <main>
@@ -60,7 +66,7 @@ export default async function HomePage() {
           <h2 className="font-display text-2xl font-bold text-ink">Today&apos;s deals</h2>
           <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-4">
             {deals.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} liked={liked.has(p.id)} />
             ))}
           </div>
         </section>
@@ -75,7 +81,7 @@ export default async function HomePage() {
         ) : (
           <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-4">
             {newArrivals.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} liked={liked.has(p.id)} />
             ))}
           </div>
         )}

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/lib/actions/auth";
 import { getCartCount } from "@/lib/actions/cart";
+import { getWishlistCount } from "@/lib/actions/wishlist";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -14,18 +16,21 @@ export async function SiteHeader() {
   let isAdmin = false;
   let avatarUrl: string | null = null;
   let cartCount = 0;
+  let wishlistCount = 0;
   if (user) {
-    const [{ data: profile }, count] = await Promise.all([
+    const [{ data: profile }, count, likedCount] = await Promise.all([
       supabase
         .from("profiles")
         .select("is_admin, avatar_url")
         .eq("id", user.id)
         .single(),
       getCartCount(),
+      getWishlistCount(),
     ]);
     isAdmin = Boolean(profile?.is_admin);
     avatarUrl = profile?.avatar_url ?? null;
     cartCount = count;
+    wishlistCount = likedCount;
   }
 
   return (
@@ -41,6 +46,21 @@ export async function SiteHeader() {
           </Link>
           {user ? (
             <>
+              <Link
+                href="/wishlist"
+                className="relative flex items-center transition hover:text-accent"
+                aria-label="Wishlist"
+              >
+                <Heart size={18} />
+                {wishlistCount > 0 && (
+                  <span
+                    className="absolute -right-3 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold leading-none text-onaccent"
+                    aria-label={`${wishlistCount} item${wishlistCount === 1 ? "" : "s"} in wishlist`}
+                  >
+                    {wishlistCount > 99 ? "99+" : wishlistCount}
+                  </span>
+                )}
+              </Link>
               <Link href="/cart" className="relative flex items-center transition hover:text-accent">
                 Cart
                 {cartCount > 0 && (

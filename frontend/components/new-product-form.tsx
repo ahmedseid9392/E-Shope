@@ -130,6 +130,27 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
         </div>
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium">Colors (optional)</label>
+          <input
+            name="colors"
+            placeholder="e.g. Black, White, Navy"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+          <p className="mt-1 text-xs text-muted">Comma-separated. Shown as choices on the product page.</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Sizes (optional)</label>
+          <input
+            name="sizes"
+            placeholder="e.g. S, M, L, XL"
+            className="mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+          <p className="mt-1 text-xs text-muted">Comma-separated.</p>
+        </div>
+      </div>
+
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" name="is_active" defaultChecked />
         Active (visible on storefront)
