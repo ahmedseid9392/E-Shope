@@ -12,12 +12,12 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-ink">Dashboard</h1>
+      <h1 className="font-display text-xl font-bold text-ink sm:text-2xl">Dashboard</h1>
       <p className="mt-1 text-muted">
-        Welcome back, {profile.full_name ?? profile.email}. Here's what's happening in your store.
+        Welcome back, {profile.full_name ?? profile.email}. Here&apos;s what&apos;s happening in your store.
       </p>
 
-      <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
         <StatCard
           icon={DollarSign}
           label="Revenue"
@@ -36,14 +36,14 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="rounded-xl border border-line bg-surface p-5 lg:col-span-2">
+        <div className="min-w-0 rounded-xl border border-line bg-surface p-4 sm:p-5 lg:col-span-2">
           <h2 className="font-display text-lg font-bold text-ink">Revenue, last 14 days</h2>
           <div className="mt-4">
             <RevenueChart data={revenueByDay} />
           </div>
         </div>
 
-        <div className="rounded-xl border border-line bg-surface p-5">
+        <div className="min-w-0 rounded-xl border border-line bg-surface p-4 sm:p-5">
           <h2 className="font-display text-lg font-bold text-ink">Low stock</h2>
           <div className="mt-2">
             <LowStockList products={lowStockProducts} />
@@ -51,7 +51,7 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="mt-6 rounded-xl border border-line bg-surface p-5">
+      <div className="mt-6 min-w-0 rounded-xl border border-line bg-surface p-4 sm:p-5">
         <h2 className="font-display text-lg font-bold text-ink">Recent activity</h2>
         <div className="mt-2">
           <RecentOrders orders={recentOrders as any} />

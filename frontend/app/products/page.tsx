@@ -34,7 +34,7 @@ export default async function ProductsPage({
     : [];
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
+    <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
       <h1 className="font-display text-2xl font-bold text-ink">Products</h1>
 
       <ProductFilters categories={categories} recentSearches={recentSearches} />
@@ -48,7 +48,7 @@ export default async function ProductsPage({
           </h2>
 
           {products.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} liked={liked.has(product.id)} />
               ))}
@@ -60,7 +60,7 @@ export default async function ProductsPage({
               <h2 className="font-display text-lg font-bold text-ink">
                 {products.length > 0 ? "You might also like" : "Other products"}
               </h2>
-              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
                 {otherProducts.map((product) => (
                   <ProductCard key={product.id} product={product} liked={liked.has(product.id)} />
                 ))}
@@ -71,7 +71,7 @@ export default async function ProductsPage({
       ) : products.length === 0 ? (
         <p className="mt-10 text-muted">No products found.</p>
       ) : (
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} liked={liked.has(product.id)} />
           ))}

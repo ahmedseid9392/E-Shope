@@ -32,8 +32,8 @@ export default async function ProductDetailPage({
   const onSale = isOnSale(product);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
-      <div className="grid gap-8 md:grid-cols-2">
+    <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
+      <div className="grid gap-6 md:grid-cols-2 md:gap-10">
         <div className="relative aspect-square overflow-hidden rounded-lg bg-bg">
           {product.image_urls?.[0] && (
             <Image
@@ -51,9 +51,9 @@ export default async function ProductDetailPage({
         </div>
 
         <div>
-          <h1 className="font-display text-2xl font-bold text-ink">{product.name}</h1>
+          <h1 className="font-display text-xl font-bold text-ink sm:text-2xl">{product.name}</h1>
 
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             {onSale ? (
               <>
                 <span className="text-lg text-muted line-through">
@@ -89,9 +89,9 @@ export default async function ProductDetailPage({
       </div>
 
       {related.length > 0 && (
-        <section className="mt-16">
+        <section className="mt-12 sm:mt-16">
           <h2 className="font-display text-lg font-bold text-ink">Related products</h2>
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4">
             {related.map((p) => (
               <ProductCard key={p.id} product={p} liked={liked.has(p.id)} />
             ))}
@@ -99,7 +99,7 @@ export default async function ProductDetailPage({
         </section>
       )}
 
-      <section className="mt-16 max-w-xl">
+      <section className="mt-12 max-w-xl sm:mt-16">
         <h2 className="font-display text-lg font-bold text-ink">Reviews</h2>
 
         <div className="mt-4 space-y-4">

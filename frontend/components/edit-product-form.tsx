@@ -19,7 +19,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded bg-accent px-4 py-2 text-sm text-onaccent disabled:opacity-50"
+      className="w-full rounded bg-accent px-4 py-3 text-sm text-onaccent disabled:opacity-50 sm:w-auto sm:py-2"
     >
       {pending ? "Saving..." : "Save changes"}
     </button>
@@ -55,7 +55,7 @@ export function EditProductForm({
   const [imageUrl, setImageUrl] = useState(product.image_urls?.[0] ?? "");
 
   return (
-    <form action={formAction} className="mt-6 max-w-lg space-y-4">
+    <form action={formAction} className="mt-6 w-full max-w-lg space-y-4">
       <div>
         <label className="block text-sm font-medium">Product image</label>
         <div className="mt-1">
@@ -94,7 +94,7 @@ export function EditProductForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium">Price (ETB)</label>
           <input
@@ -118,7 +118,7 @@ export function EditProductForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium">Sale starts (optional)</label>
           <input
@@ -142,7 +142,7 @@ export function EditProductForm({
         Leave both blank for a sale that starts now and never ends.
       </p>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium">Stock</label>
           <input
@@ -170,7 +170,7 @@ export function EditProductForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium">Colors (optional)</label>
           <input

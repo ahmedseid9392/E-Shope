@@ -12,7 +12,7 @@ export default async function EditProductPage({ params }: { params: { id: string
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-ink">Edit product</h1>
+      <h1 className="font-display text-xl font-bold text-ink sm:text-2xl">Edit product</h1>
       <EditProductForm product={product} categories={categories} />
     </div>
   );

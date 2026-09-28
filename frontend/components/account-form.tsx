@@ -11,7 +11,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded bg-accent px-4 py-2 text-sm text-onaccent disabled:opacity-50"
+      className="w-full rounded bg-accent px-4 py-3 text-sm text-onaccent disabled:opacity-50 sm:w-auto sm:py-2"
     >
       {pending ? "Saving..." : "Save changes"}
     </button>
@@ -34,7 +34,7 @@ export function AccountForm({
   const [avatar, setAvatar] = useState(avatarUrl ?? "");
 
   return (
-    <form action={formAction} className="mt-6 max-w-sm space-y-4">
+    <form action={formAction} className="mt-6 w-full max-w-sm space-y-4">
       <div>
         <label className="block text-sm font-medium">Profile photo</label>
         <div className="mt-1">

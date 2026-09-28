@@ -6,7 +6,7 @@ export function GoogleSignInButton({ redirectPath = "/" }: { redirectPath?: stri
       <input type="hidden" name="redirectPath" value={redirectPath} />
       <button
         type="submit"
-        className="flex w-full items-center justify-center gap-2 rounded border border-line bg-surface py-2 text-sm font-medium text-ink transition hover:border-ink"
+        className="flex w-full items-center justify-center gap-2 rounded border border-line bg-surface py-3 text-sm sm:py-2 font-medium text-ink transition hover:border-ink"
       >
         <svg width="16" height="16" viewBox="0 0 16 16">
           <path

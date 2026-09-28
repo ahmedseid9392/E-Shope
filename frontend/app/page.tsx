@@ -15,27 +15,27 @@ export default async function HomePage() {
 
   return (
     <main>
-      <section className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
-        <div className="grid items-center gap-12 md:grid-cols-2">
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16 md:py-24">
+        <div className="grid items-center gap-8 sm:gap-12 md:grid-cols-2">
           <div>
-            <h1 className="font-display text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+            <h1 className="font-display text-3xl font-extrabold leading-tight text-ink sm:text-5xl">
               Everyday goods, honest prices.
             </h1>
             <p className="mt-5 max-w-md text-base text-muted">
               Clothing, electronics, and home essentials — in stock, fairly priced, and
               delivered across Ethiopia. Pay by bank transfer, mobile money, or card.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-4">
               <Link
                 href="/products"
-                className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-onaccent transition hover:bg-accent/90"
+                className="rounded-full bg-accent px-6 py-3 text-center text-sm font-semibold text-onaccent transition hover:bg-accent/90"
               >
                 Shop all products
               </Link>
               {deals.length > 0 && (
                 <Link
                   href="/products"
-                  className="rounded-full border border-line px-6 py-3 text-sm font-semibold text-ink transition hover:border-ink"
+                  className="rounded-full border border-line px-6 py-3 text-center text-sm font-semibold text-ink transition hover:border-ink"
                 >
                   See today&apos;s deals
                 </Link>
@@ -43,7 +43,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-sm md:max-w-none">
+          <div className="mx-auto w-full max-w-[16rem] sm:max-w-sm md:max-w-none">
             {/*
               HeroGraphic is an original illustration (no stock photo licensing needed).
               To swap in a real licensed product photo instead:
@@ -62,9 +62,9 @@ export default async function HomePage() {
       <TrustStrip />
 
       {deals.length > 0 && (
-        <section className="mx-auto max-w-6xl px-6 py-16">
-          <h2 className="font-display text-2xl font-bold text-ink">Today&apos;s deals</h2>
-          <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-4">
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
+          <h2 className="font-display text-xl font-bold text-ink sm:text-2xl">Today&apos;s deals</h2>
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-4">
             {deals.map((p) => (
               <ProductCard key={p.id} product={p} liked={liked.has(p.id)} />
             ))}
@@ -72,14 +72,14 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="font-display text-2xl font-bold text-ink">New arrivals</h2>
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
+        <h2 className="font-display text-xl font-bold text-ink sm:text-2xl">New arrivals</h2>
         {newArrivals.length === 0 ? (
           <p className="mt-4 text-muted">
             No products yet — add some from the admin dashboard.
           </p>
         ) : (
-          <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-4">
             {newArrivals.map((p) => (
               <ProductCard key={p.id} product={p} liked={liked.has(p.id)} />
             ))}

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Work_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
@@ -19,6 +19,15 @@ const body = Work_Sans({
 export const metadata: Metadata = {
   title: "E-Shope",
   description: "Everyday goods, honest prices — clothing, electronics, and home essentials.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf9f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f1120" },
+  ],
 };
 
 export default function RootLayout({

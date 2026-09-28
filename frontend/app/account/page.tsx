@@ -14,7 +14,7 @@ export default async function AccountPage() {
     .single();
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-16">
+    <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-16">
       <h1 className="font-display text-2xl font-bold text-ink">Your account</h1>
       <p className="mt-2 text-sm text-muted">
         Signed in via {user!.app_metadata.provider === "google" ? "Google" : "email"}.

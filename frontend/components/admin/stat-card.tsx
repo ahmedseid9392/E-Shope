@@ -14,7 +14,7 @@ export function StatCard({
   tone?: "default" | "warning";
 }) {
   return (
-    <div className="rounded-xl border border-line bg-surface p-5">
+    <div className="min-w-0 rounded-xl border border-line bg-surface p-4 sm:p-5">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted">{label}</p>
         <span
@@ -25,7 +25,7 @@ export function StatCard({
           <Icon size={16} />
         </span>
       </div>
-      <p className="mt-3 font-display text-2xl font-bold text-ink">{value}</p>
+      <p className="mt-3 truncate font-display text-xl font-bold text-ink sm:text-2xl">{value}</p>
       {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
     </div>
   );

@@ -11,7 +11,7 @@ export default async function CartPage() {
   }, 0);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-16">
+    <main className="mx-auto max-w-2xl px-4 py-8 sm:py-16">
       <h1 className="font-display text-2xl font-bold text-ink">Your cart</h1>
 
       {items.length === 0 ? (
@@ -30,11 +30,11 @@ export default async function CartPage() {
             ))}
           </div>
 
-          <div className="mt-6 flex items-center justify-between">
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <span className="font-display text-lg font-bold text-ink">Total: {formatPrice(total)}</span>
             <Link
               href="/checkout"
-              className="rounded bg-accent px-6 py-2 text-onaccent hover:bg-accent/90"
+              className="rounded bg-accent px-6 py-3 text-center font-medium text-onaccent hover:bg-accent/90 sm:py-2"
             >
               Checkout
             </Link>

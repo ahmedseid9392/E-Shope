@@ -38,7 +38,7 @@ export function ImageUploader({
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
       <div
         className={`flex h-20 w-20 items-center justify-center overflow-hidden border border-line bg-bg text-xs text-muted ${
           shape === "circle" ? "rounded-full" : "rounded-lg"

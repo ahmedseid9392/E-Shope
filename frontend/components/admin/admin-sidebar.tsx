@@ -27,7 +27,7 @@ function SidebarLinks({ pathname, onNavigate }: { pathname: string; onNavigate?:
             href={href}
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+            className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
               active
                 ? "bg-accent text-onaccent"
                 : "text-muted hover:bg-surface hover:text-ink"
@@ -49,13 +49,13 @@ export function AdminSidebar({ name }: { name: string }) {
   return (
     <>
       {/* Mobile top bar with menu toggle */}
-      <div className="flex items-center justify-between border-b border-line px-4 py-3 md:hidden">
-        <span className="font-display text-sm font-bold text-ink">Admin · {name}</span>
+      <div className="flex items-center justify-between border-b border-line px-4 py-2 md:hidden">
+        <span className="min-w-0 truncate font-display text-sm font-bold text-ink">Admin · {name}</span>
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open admin menu"
-          className="rounded-md border border-line p-2 text-ink"
+          className="ml-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-line text-ink"
         >
           <Menu size={18} />
         </button>
@@ -69,14 +69,14 @@ export function AdminSidebar({ name }: { name: string }) {
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-ink/40"
           />
-          <div className="absolute inset-y-0 left-0 flex w-64 flex-col gap-4 bg-bg p-4">
+          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col gap-4 overflow-y-auto bg-bg p-4">
             <div className="flex items-center justify-between">
               <span className="font-display text-sm font-bold text-ink">Admin</span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close admin menu"
-                className="rounded-md border border-line p-1.5 text-ink"
+                className="flex h-9 w-9 items-center justify-center rounded-md border border-line text-ink"
               >
                 <X size={16} />
               </button>

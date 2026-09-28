@@ -32,7 +32,7 @@ export function StarRatingInput({
             onMouseEnter={() => setHovered(n)}
             onFocus={() => setHovered(n)}
             onClick={() => setRating(n)}
-            className="p-0.5 text-accent transition hover:scale-110"
+            className="p-1 text-accent transition hover:scale-110"
           >
             <Star size={24} fill={n <= display ? "currentColor" : "none"} strokeWidth={1.5} />
           </button>

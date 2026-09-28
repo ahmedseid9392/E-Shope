@@ -17,7 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (!profile?.is_admin) {
     return (
-      <main className="mx-auto max-w-5xl px-4 py-16">
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:py-16">
         <p>Not authorized.</p>
       </main>
     );
@@ -26,9 +26,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const name = profile.full_name ?? user!.email ?? "Admin";
 
   return (
-    <div className="mx-auto flex max-w-7xl">
+    <div className="mx-auto flex max-w-7xl flex-col md:flex-row">
       <AdminSidebar name={name} />
-      <main className="min-w-0 flex-1 px-4 py-8 md:px-8">{children}</main>
+      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 md:px-8 md:py-8">{children}</main>
     </div>
   );
 }

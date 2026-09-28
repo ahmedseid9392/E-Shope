@@ -17,7 +17,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
   const currentStep = STEPS.indexOf(order.status);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-16">
+    <main className="mx-auto max-w-2xl px-4 py-8 sm:py-16">
       <Link href="/orders" className="text-sm text-muted hover:underline">
         ← Back to orders
       </Link>
@@ -45,7 +45,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
       )}
       <div className="mt-1 flex justify-between text-xs text-muted">
         {STEPS.map((step) => (
-          <span key={step} className="capitalize">
+          <span key={step} className="capitalize text-[11px] sm:text-xs">
             {step}
           </span>
         ))}
@@ -53,8 +53,8 @@ export default async function OrderDetailPage({ params }: { params: { id: string
 
       <div className="mt-8 divide-y divide-line">
         {order.order_items.map((item: any) => (
-          <div key={item.id} className="flex justify-between py-3">
-            <span>
+          <div key={item.id} className="flex justify-between gap-4 py-3">
+            <span className="min-w-0">
               {item.product?.name ?? "Product"} × {item.quantity}
               {(item.color || item.size) && (
                 <span className="text-muted">
@@ -63,7 +63,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
                 </span>
               )}
             </span>
-            <span>{formatPrice(item.price_at_purchase * item.quantity)}</span>
+            <span className="shrink-0">{formatPrice(item.price_at_purchase * item.quantity)}</span>
           </div>
         ))}
       </div>
@@ -75,7 +75,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
 
       <div className="mt-8">
         <h2 className="text-sm font-medium">Shipping address</h2>
-        <pre className="mt-1 whitespace-pre-wrap rounded bg-bg p-3 text-sm text-muted">
+        <pre className="mt-1 overflow-x-auto whitespace-pre-wrap break-words rounded bg-bg p-3 text-xs text-muted sm:text-sm">
           {JSON.stringify(order.shipping_address, null, 2)}
         </pre>
       </div>

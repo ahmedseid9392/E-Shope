@@ -91,7 +91,7 @@ export function ProductOptions({
                   type="button"
                   onClick={() => setSize(s)}
                   aria-pressed={selected}
-                  className={`min-w-[2.5rem] rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
+                  className={`min-h-10 min-w-[2.75rem] rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
                     selected
                       ? "border-ink bg-ink text-bg"
                       : "border-line text-ink hover:border-ink/40"
@@ -105,7 +105,13 @@ export function ProductOptions({
         </div>
       )}
 
-      <AddToCartButton productId={productId} disabled={disabled} color={color} size={size} />
+      <AddToCartButton
+        productId={productId}
+        disabled={disabled}
+        color={color}
+        size={size}
+        className="w-full sm:w-auto"
+      />
     </div>
   );
 }

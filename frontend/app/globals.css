@@ -27,8 +27,39 @@
   color: rgb(var(--color-ink));
 }
 
+html {
+  /* Stop iOS from inflating text after rotating the device. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  max-width: 100%;
+  /* `clip` (unlike `hidden`) never creates a scroll container, so sticky
+     elements keep working while a stray wide element can't cause sideways
+     scrolling on phones. */
+  overflow-x: clip;
+}
+
 body {
   transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-wrap: break-word;
+}
+
+/* iOS Safari zooms the whole page when a focused input has a font size under
+   16px. Force 16px on small screens so forms don't jump around. */
+@media (max-width: 639px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Keep the footer clear of the home indicator on notched phones. */
+footer {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 @keyframes floaty {

@@ -14,7 +14,7 @@ export default async function OrdersPage() {
   const orders = await getOrders();
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:py-16">
       <h1 className="font-display text-2xl font-bold text-ink">Your orders</h1>
 
       {orders.length === 0 ? (
@@ -31,7 +31,7 @@ export default async function OrdersPage() {
             <Link
               key={order.id}
               href={`/orders/${order.id}`}
-              className="flex items-center justify-between py-4 hover:bg-bg"
+              className="flex items-center justify-between gap-4 py-4 hover:bg-bg"
             >
               <div>
                 <p className="font-medium">Order #{order.id.slice(0, 8)}</p>

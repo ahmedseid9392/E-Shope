@@ -47,6 +47,7 @@ export function RevenueChart({ data }: { data: { date: string; revenue: number }
             axisLine={{ stroke: "rgb(var(--color-line))" }}
             tickLine={false}
             interval="preserveStartEnd"
+            minTickGap={24}
           />
           <YAxis
             tick={{ fill: "rgb(var(--color-muted))", fontSize: 11 }}

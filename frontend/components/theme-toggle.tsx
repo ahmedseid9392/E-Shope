@@ -9,7 +9,14 @@ export function ThemeToggle() {
   const [isDark, setIsDark] = useState<boolean | null>(null);
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
+    const root = document.documentElement;
+    const sync = () => setIsDark(root.classList.contains("dark"));
+    sync();
+    // The header renders one toggle for desktop and one for mobile; watching
+    // the <html> class keeps both icons correct whichever one was clicked.
+    const observer = new MutationObserver(sync);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
   }, []);
 
   function toggle() {
@@ -21,14 +28,14 @@ export function ThemeToggle() {
 
   if (isDark === null) {
     // Render a fixed-size placeholder so the header doesn't shift on mount.
-    return <div className="h-8 w-8" />;
+    return <div className="h-10 w-10 md:h-8 md:w-8" />;
   }
 
   return (
     <button
       onClick={toggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-line text-ink transition hover:border-ink"
+      className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink transition hover:border-ink md:h-8 md:w-8"
     >
       {isDark ? (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

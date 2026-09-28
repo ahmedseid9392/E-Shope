@@ -50,7 +50,7 @@ export function LikeButton({
       disabled={isPending}
       aria-pressed={liked}
       aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
-      className={`flex items-center justify-center rounded-full bg-surface/90 p-2 text-ink shadow-sm ring-1 ring-line backdrop-blur transition hover:text-red-500 disabled:opacity-60 ${className}`}
+      className={`flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 text-ink shadow-sm ring-1 ring-line backdrop-blur transition hover:text-red-500 disabled:opacity-60 ${className}`}
     >
       <Heart
         size={size}

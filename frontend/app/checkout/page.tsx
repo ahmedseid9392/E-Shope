@@ -9,7 +9,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded bg-accent py-2 text-onaccent disabled:opacity-50"
+      className="w-full rounded bg-accent py-3 text-onaccent disabled:opacity-50 sm:py-2"
     >
       {pending ? "Placing order..." : "Place order"}
     </button>
@@ -20,7 +20,7 @@ export default function CheckoutPage() {
   const [state, formAction] = useFormState(checkout, undefined);
 
   return (
-    <main className="mx-auto max-w-md px-4 py-16">
+    <main className="mx-auto w-full max-w-md px-4 py-8 sm:py-16">
       <h1 className="font-display text-2xl font-bold text-ink">Checkout</h1>
       <p className="mt-2 text-sm text-muted">
         Payment via Chapa gets wired in at Phase 8 — for now, placing an order creates it as{" "}

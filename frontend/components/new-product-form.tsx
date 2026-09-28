@@ -11,7 +11,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded bg-accent px-4 py-2 text-sm text-onaccent disabled:opacity-50"
+      className="w-full rounded bg-accent px-4 py-3 text-sm text-onaccent disabled:opacity-50 sm:w-auto sm:py-2"
     >
       {pending ? "Saving..." : "Create product"}
     </button>
@@ -23,7 +23,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
   const [imageUrl, setImageUrl] = useState("");
 
   return (
-    <form action={formAction} className="mt-6 max-w-lg space-y-4">
+    <form action={formAction} className="mt-6 w-full max-w-lg space-y-4">
       <div>
         <label className="block text-sm font-medium">Product image</label>
         <div className="mt-1">
@@ -60,7 +60,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium">Price (ETB)</label>
           <input
@@ -82,7 +82,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium">Sale starts (optional)</label>
           <input
@@ -104,7 +104,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
         Leave both blank for a sale that starts now and never ends. Times are in your browser&apos;s local timezone.
       </p>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium">Stock</label>
           <input
@@ -130,7 +130,7 @@ export function NewProductForm({ categories }: { categories: { id: string; name:
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium">Colors (optional)</label>
           <input

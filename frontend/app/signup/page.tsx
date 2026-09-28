@@ -11,7 +11,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded bg-accent py-2 text-onaccent transition hover:bg-accent/90 disabled:opacity-50"
+      className="w-full rounded bg-accent py-3 text-onaccent transition hover:bg-accent/90 disabled:opacity-50 sm:py-2"
     >
       {pending ? "Creating account..." : "Sign up"}
     </button>
@@ -22,7 +22,7 @@ export default function SignupPage() {
   const [state, formAction] = useFormState(signUp, undefined);
 
   return (
-    <main className="mx-auto max-w-sm px-4 py-16">
+    <main className="mx-auto w-full max-w-sm px-4 py-8 sm:py-16">
       <h1 className="font-display text-2xl font-bold text-ink">Sign up</h1>
 
       <div className="mt-6">

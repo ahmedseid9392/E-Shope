@@ -61,18 +61,18 @@ export function ProductFilters({
 
   return (
     <div className="mt-6">
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
         <input
           type="text"
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           placeholder="Search products..."
-          className="min-w-[200px] flex-1 rounded border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          className="col-span-2 min-w-0 rounded border border-line bg-surface px-3 py-2.5 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:min-w-[200px] sm:flex-1 sm:py-2"
         />
         <select
           defaultValue={searchParams.get("category") ?? ""}
           onChange={(e) => updateParams({ category: e.target.value || undefined })}
-          className="rounded border border-line bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          className="min-w-0 rounded border border-line bg-surface px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:py-2"
         >
           <option value="">All categories</option>
           {categories.map((c) => (
@@ -84,7 +84,7 @@ export function ProductFilters({
         <select
           defaultValue={searchParams.get("sort") ?? "newest"}
           onChange={(e) => updateParams({ sort: e.target.value })}
-          className="rounded border border-line bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          className="min-w-0 rounded border border-line bg-surface px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:py-2"
         >
           <option value="newest">Newest</option>
           <option value="price_asc">Price: low to high</option>
@@ -99,7 +99,7 @@ export function ProductFilters({
             <button
               key={term}
               onClick={() => selectRecentSearch(term)}
-              className="underline hover:text-ink"
+              className="rounded-full border border-line px-3 py-1 hover:border-ink hover:text-ink"
             >
               {term}
             </button>
