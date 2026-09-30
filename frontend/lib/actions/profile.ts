@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { dbErrorMessage } from "@/lib/errors";
 
 export type ProfileActionState = { error?: string; success?: boolean } | undefined;
 
@@ -26,7 +27,7 @@ export async function updateProfile(
     .update({ full_name: fullName, avatar_url: avatarUrl || null })
     .eq("id", user.id);
 
-  if (error) return { error: error.message };
+  if (error) return { error: dbErrorMessage(error, "updateProfile") };
 
   // Header and anywhere else showing name/avatar should reflect the change immediately.
   revalidatePath("/", "layout");

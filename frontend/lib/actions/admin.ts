@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { assertNoDbError } from "@/lib/errors";
 
 // Orders in these statuses count as realized revenue. `pending` orders exist
 // but haven't been paid yet (see lib/actions/orders.ts), and `cancelled`
@@ -84,7 +85,7 @@ export async function getAdminDashboardData() {
     recentOrdersRes,
     chartOrdersRes,
   ]) {
-    if (res.error) throw new Error(res.error.message);
+    assertNoDbError(res.error, "getAdminDashboardData");
   }
 
   const totalRevenue = (revenueRowsRes.data ?? []).reduce(

@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { ShoppingCart, Check } from "lucide-react";
 import { addToCart } from "@/lib/actions/cart";
+import { useToast } from "@/components/toast-provider";
+import { getErrorMessage } from "@/lib/errors";
 
 export function AddToCartButton({
   productId,
@@ -23,6 +26,8 @@ export function AddToCartButton({
 }) {
   const [isPending, startTransition] = useTransition();
   const [justAdded, setJustAdded] = useState(false);
+  const toast = useToast();
+  const router = useRouter();
 
   function handleClick(e: React.MouseEvent) {
     if (iconOnly) {
@@ -32,9 +37,19 @@ export function AddToCartButton({
       e.stopPropagation();
     }
     startTransition(async () => {
-      await addToCart(productId, 1, { color: color ?? null, size: size ?? null });
-      setJustAdded(true);
-      setTimeout(() => setJustAdded(false), 1500);
+      try {
+        await addToCart(productId, 1, { color: color ?? null, size: size ?? null });
+        setJustAdded(true);
+        setTimeout(() => setJustAdded(false), 1500);
+      } catch (err) {
+        const message = getErrorMessage(err, "Couldn't add this to your cart.");
+        if (message.includes("Not authenticated")) {
+          toast("Please log in to add items to your cart.");
+          router.push("/login");
+        } else {
+          toast(message);
+        }
+      }
     });
   }
 

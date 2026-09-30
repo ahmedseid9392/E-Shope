@@ -1,19 +1,10 @@
-import { Skeleton } from "@/components/skeleton";
-
 export default function Loading() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="font-display text-2xl font-bold text-ink">Your orders</h1>
-
-      <div className="mt-6 divide-y divide-line">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="flex items-center justify-between py-4">
-            <div>
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="mt-2 h-3 w-24" />
-            </div>
-            <Skeleton className="h-4 w-16" />
-          </div>
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:py-16">
+      <div className="h-8 w-40 animate-pulse rounded bg-line/50" />
+      <div className="mt-6 space-y-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-28 animate-pulse rounded-xl bg-line/50" />
         ))}
       </div>
     </main>

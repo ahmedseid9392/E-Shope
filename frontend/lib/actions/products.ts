@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { assertNoDbError, dbErrorMessage } from "@/lib/errors";
 import { productSchema, parseListInput } from "@/lib/validations/product";
 import { isOnSale } from "@/lib/sale";
 
@@ -45,7 +46,7 @@ export async function listProducts(params: ProductListParams = {}) {
   }
 
   const { data, error } = await query;
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "listProducts");
   return data ?? [];
 }
 
@@ -58,14 +59,20 @@ export async function getProductBySlug(slug: string) {
     .eq("is_active", true)
     .single();
 
-  if (error) return null;
+  // PGRST116 = no row found — an expected case, not a real error. Anything
+  // else is unexpected, so it's worth logging even though we still just
+  // show the caller a 404 either way.
+  if (error) {
+    if (error.code !== "PGRST116") console.error("[getProductBySlug]", error.message);
+    return null;
+  }
   return data;
 }
 
 export async function getRelatedProducts(categoryId: string | null, excludeId: string) {
   if (!categoryId) return [];
   const supabase = createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("products")
     .select("*")
     .eq("category_id", categoryId)
@@ -73,17 +80,21 @@ export async function getRelatedProducts(categoryId: string | null, excludeId: s
     .neq("id", excludeId)
     .order("created_at", { ascending: false })
     .limit(4);
+  // This is a "you might also like" section, not the main content — log and
+  // degrade to an empty list rather than breaking the whole product page.
+  if (error) console.error("[getRelatedProducts]", error.message);
   return data ?? [];
 }
 
 export async function getNewArrivals(limit = 8) {
   const supabase = createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("products")
     .select("*")
     .eq("is_active", true)
     .order("created_at", { ascending: false })
     .limit(limit);
+  if (error) console.error("[getNewArrivals]", error.message);
   return data ?? [];
 }
 
@@ -93,19 +104,21 @@ export async function getDeals(limit = 8) {
   // sale-window check in code — combining "starts_at is null OR in the past"
   // AND "ends_at is null OR in the future" as a single Postgres filter gets
   // unreadable fast, and this list is small enough that it doesn't matter.
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("products")
     .select("*")
     .eq("is_active", true)
     .not("sale_price", "is", null)
     .order("created_at", { ascending: false });
 
+  if (error) console.error("[getDeals]", error.message);
   return (data ?? []).filter((p) => isOnSale(p)).slice(0, limit);
 }
 
 export async function getCategories() {
   const supabase = createClient();
-  const { data } = await supabase.from("categories").select("*").order("name");
+  const { data, error } = await supabase.from("categories").select("*").order("name");
+  if (error) console.error("[getCategories]", error.message);
   return data ?? [];
 }
 
@@ -127,7 +140,8 @@ export async function getOtherProducts(excludeIds: string[], limit = 8) {
     query = query.not("id", "in", `(${excludeIds.join(",")})`);
   }
 
-  const { data } = await query;
+  const { data, error } = await query;
+  if (error) console.error("[getOtherProducts]", error.message);
   return data ?? [];
 }
 
@@ -193,7 +207,13 @@ export async function createProduct(
     sizes: parseListInput(sizes),
   });
 
-  if (error) return { error: error.message };
+  if (error) {
+    return {
+      error: dbErrorMessage(error, "createProduct", {
+        "23505": "A product with that slug already exists — try a different one.",
+      }),
+    };
+  }
 
   revalidatePath("/admin/products");
   revalidatePath("/products");
@@ -205,7 +225,10 @@ export async function createProduct(
 export async function getProductByIdForAdmin(id: string) {
   const supabase = await requireAdmin();
   const { data, error } = await supabase.from("products").select("*").eq("id", id).single();
-  if (error) return null;
+  if (error) {
+    if (error.code !== "PGRST116") console.error("[getProductByIdForAdmin]", error.message);
+    return null;
+  }
   return data;
 }
 
@@ -252,7 +275,13 @@ export async function updateProduct(
     })
     .eq("id", id);
 
-  if (error) return { error: error.message };
+  if (error) {
+    return {
+      error: dbErrorMessage(error, "updateProduct", {
+        "23505": "A product with that slug already exists — try a different one.",
+      }),
+    };
+  }
 
   revalidatePath("/admin/products");
   revalidatePath("/products");
@@ -264,7 +293,7 @@ export async function deleteProduct(id: string) {
   const supabase = await requireAdmin();
   // Soft delete — keep order history intact (order_items references product_id).
   const { error } = await supabase.from("products").update({ is_active: false }).eq("id", id);
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "deleteProduct");
 
   revalidatePath("/admin/products");
   revalidatePath("/products");

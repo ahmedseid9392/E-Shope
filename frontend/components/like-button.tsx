@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { toggleWishlist } from "@/lib/actions/wishlist";
+import { useToast } from "@/components/toast-provider";
+import { getErrorMessage } from "@/lib/errors";
 
 export function LikeButton({
   productId,
@@ -19,6 +21,7 @@ export function LikeButton({
   const [liked, setLiked] = useState(initialLiked);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const toast = useToast();
 
   function handleClick(e: React.MouseEvent) {
     // Product cards wrap this button in a <Link>; stop the click from also
@@ -36,8 +39,12 @@ export function LikeButton({
         setLiked(result.liked);
       } catch (err) {
         setLiked(!next);
-        if (err instanceof Error && err.message.includes("Not authenticated")) {
+        const message = getErrorMessage(err, "Couldn't update your wishlist.");
+        if (message.includes("Not authenticated")) {
+          toast("Please log in to save items to your wishlist.");
           router.push("/login");
+        } else {
+          toast(message);
         }
       }
     });

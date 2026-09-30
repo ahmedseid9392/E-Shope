@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { assertNoDbError, dbErrorMessage } from "@/lib/errors";
 
 export async function getReviews(productId: string) {
   const supabase = createClient();
@@ -11,7 +12,7 @@ export async function getReviews(productId: string) {
     .eq("product_id", productId)
     .order("created_at", { ascending: false });
 
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "getReviews");
   return data ?? [];
 }
 
@@ -57,7 +58,13 @@ export async function createReview(
     comment,
   });
 
-  if (error) return { error: error.message };
+  if (error) {
+    return {
+      error: dbErrorMessage(error, "createReview", {
+        "23505": "You've already reviewed this product.",
+      }),
+    };
+  }
 
   revalidatePath(`/products`);
   return { success: true };

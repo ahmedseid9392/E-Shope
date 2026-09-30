@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { Trash2, Minus, Plus, Loader2 } from "lucide-react";
 import { formatPrice } from "@/lib/format";
 import { updateCartItemQuantity, removeFromCart } from "@/lib/actions/cart";
+import { useToast } from "@/components/toast-provider";
+import { getErrorMessage } from "@/lib/errors";
 
 type CartItem = {
   id: string;
@@ -16,6 +18,7 @@ type CartItem = {
     slug: string;
     price: number;
     sale_price: number | null;
+    stock: number;
   };
 };
 
@@ -23,12 +26,26 @@ export function CartLineItem({ item }: { item: CartItem }) {
   const [isPending, startTransition] = useTransition();
   const [isRemoving, setIsRemoving] = useState(false);
   const unitPrice = item.product.sale_price ?? item.product.price;
+  const toast = useToast();
+  const atStockLimit = item.quantity >= item.product.stock;
+
+  function changeQuantity(nextQuantity: number) {
+    startTransition(async () => {
+      try {
+        await updateCartItemQuantity(item.id, nextQuantity);
+      } catch (err) {
+        toast(getErrorMessage(err, "Couldn't update quantity."));
+      }
+    });
+  }
 
   function handleRemove() {
     setIsRemoving(true);
     startTransition(async () => {
       try {
         await removeFromCart(item.id);
+      } catch (err) {
+        toast(getErrorMessage(err, "Couldn't remove this item."));
       } finally {
         setIsRemoving(false);
       }
@@ -52,6 +69,9 @@ export function CartLineItem({ item }: { item: CartItem }) {
           </p>
         )}
         <p className="text-sm text-muted">{formatPrice(unitPrice)} each</p>
+        {atStockLimit && (
+          <p className="text-xs text-accent">Max available stock reached</p>
+        )}
       </div>
 
       {/* Quantity, line total, remove — one tidy row that fits a 320px screen */}
@@ -60,20 +80,17 @@ export function CartLineItem({ item }: { item: CartItem }) {
           <button
             disabled={isPending}
             aria-label="Decrease quantity"
-            onClick={() =>
-              startTransition(() => updateCartItemQuantity(item.id, item.quantity - 1))
-            }
+            onClick={() => changeQuantity(item.quantity - 1)}
             className="flex h-9 w-9 items-center justify-center rounded border border-line disabled:opacity-50 sm:h-8 sm:w-8"
           >
             <Minus size={14} />
           </button>
           <span className="w-6 text-center">{item.quantity}</span>
           <button
-            disabled={isPending}
+            disabled={isPending || atStockLimit}
             aria-label="Increase quantity"
-            onClick={() =>
-              startTransition(() => updateCartItemQuantity(item.id, item.quantity + 1))
-            }
+            title={atStockLimit ? "No more in stock" : undefined}
+            onClick={() => changeQuantity(item.quantity + 1)}
             className="flex h-9 w-9 items-center justify-center rounded border border-line disabled:opacity-50 sm:h-8 sm:w-8"
           >
             <Plus size={14} />

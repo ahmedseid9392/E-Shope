@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { assertNoDbError } from "@/lib/errors";
 
 async function requireUser() {
   const supabase = createClient();
@@ -11,15 +12,22 @@ async function requireUser() {
   return { supabase, user };
 }
 
+/**
+ * Full order history for the current user — not just id/date/total, but
+ * enough about each order's items (name, thumbnail, quantity) to render a
+ * useful summary card without a second round trip per order.
+ */
 export async function getOrders() {
   const { supabase, user } = await requireUser();
   const { data, error } = await supabase
     .from("orders")
-    .select("id, status, total, created_at")
+    .select(
+      "id, status, total, created_at, shipping_address, order_items(id, quantity, color, size, product:products(name, slug, image_urls))"
+    )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "getOrders");
   return data ?? [];
 }
 
@@ -28,21 +36,30 @@ export async function getOrderById(orderId: string) {
 
   const { data: order, error } = await supabase
     .from("orders")
-    .select("*, order_items(*, product:products(name, slug))")
+    .select(
+      "*, order_items(*, product:products(name, slug, image_urls))"
+    )
     .eq("id", orderId)
     .single();
 
-  if (error) throw new Error(error.message);
+  // PGRST116 = no matching row — treat the same as "not authorized" below so
+  // a caller can't tell the difference between "doesn't exist" and "exists
+  // but isn't yours" by the error shape.
+  if (error) {
+    if (error.code === "PGRST116") throw new Error("Order not found.");
+    assertNoDbError(error, "getOrderById");
+  }
 
   // Server-side ownership check on top of RLS — defense in depth.
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("is_admin")
     .eq("id", user.id)
     .single();
+  assertNoDbError(profileError, "getOrderById.profile");
 
   if (order.user_id !== user.id && !profile?.is_admin) {
-    throw new Error("Not authorized.");
+    throw new Error("Order not found.");
   }
 
   return order;
@@ -59,15 +76,22 @@ export async function createPendingOrderFromCart(shippingAddress: Record<string,
 
   const { data: cartItems, error: cartError } = await supabase
     .from("cart_items")
-    .select("quantity, color, size, product:products(id, price, sale_price, stock, name)")
+    .select("quantity, color, size, product:products(id, price, sale_price, stock, name, is_active)")
     .eq("user_id", user.id);
 
-  if (cartError) throw new Error(cartError.message);
-  if (!cartItems || cartItems.length === 0) throw new Error("Cart is empty.");
+  assertNoDbError(cartError, "createPendingOrderFromCart.cart");
+  if (!cartItems || cartItems.length === 0) throw new Error("Your cart is empty.");
 
   for (const item of cartItems as any[]) {
+    if (!item.product?.is_active) {
+      throw new Error(`${item.product?.name ?? "An item"} in your cart is no longer available.`);
+    }
     if (item.product.stock < item.quantity) {
-      throw new Error(`${item.product.name} doesn't have enough stock.`);
+      throw new Error(
+        item.product.stock > 0
+          ? `Only ${item.product.stock} of ${item.product.name} left — please update your cart.`
+          : `${item.product.name} is out of stock — please remove it from your cart.`
+      );
     }
   }
 
@@ -87,7 +111,7 @@ export async function createPendingOrderFromCart(shippingAddress: Record<string,
     .select()
     .single();
 
-  if (orderError) throw new Error(orderError.message);
+  assertNoDbError(orderError, "createPendingOrderFromCart.order");
 
   const orderItems = (cartItems as any[]).map((item) => ({
     order_id: order.id,
@@ -99,7 +123,12 @@ export async function createPendingOrderFromCart(shippingAddress: Record<string,
   }));
 
   const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-  if (itemsError) throw new Error(itemsError.message);
+  if (itemsError) {
+    // Roll back the order so a failed item insert doesn't leave a phantom
+    // empty order behind for the customer to find in their history.
+    await supabase.from("orders").delete().eq("id", order.id);
+    assertNoDbError(itemsError, "createPendingOrderFromCart.items");
+  }
 
   return order;
 }
@@ -108,11 +137,12 @@ export async function createPendingOrderFromCart(shippingAddress: Record<string,
 
 export async function getAllOrdersForAdmin() {
   const { supabase, user } = await requireUser();
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("is_admin")
     .eq("id", user.id)
     .single();
+  assertNoDbError(profileError, "getAllOrdersForAdmin.profile");
   if (!profile?.is_admin) throw new Error("Not authorized.");
 
   const { data, error } = await supabase
@@ -120,19 +150,25 @@ export async function getAllOrdersForAdmin() {
     .select("id, status, total, created_at, user_id, profiles(full_name, email)")
     .order("created_at", { ascending: false });
 
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "getAllOrdersForAdmin");
   return data ?? [];
 }
 
 export async function updateOrderStatus(orderId: string, status: string) {
+  const VALID_STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled"];
+  if (!VALID_STATUSES.includes(status)) {
+    throw new Error("Invalid order status.");
+  }
+
   const { supabase, user } = await requireUser();
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("is_admin")
     .eq("id", user.id)
     .single();
+  assertNoDbError(profileError, "updateOrderStatus.profile");
   if (!profile?.is_admin) throw new Error("Not authorized.");
 
   const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "updateOrderStatus");
 }

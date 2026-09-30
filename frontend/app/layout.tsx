@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Work_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ToastProvider } from "@/components/toast-provider";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -58,9 +59,11 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-screen flex-col bg-bg font-sans text-ink antialiased">
-        <SiteHeader />
-        <div className="flex-1">{children}</div>
-        <SiteFooter />
+        <ToastProvider>
+          <SiteHeader />
+          <div className="flex-1">{children}</div>
+          <SiteFooter />
+        </ToastProvider>
       </body>
     </html>
   );

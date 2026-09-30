@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { assertNoDbError } from "@/lib/errors";
 
 export type AuthActionState = { error?: string } | undefined;
 
@@ -80,6 +81,6 @@ export async function signInWithGoogle(formData: FormData) {
     },
   });
 
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "signInWithGoogle");
   if (data.url) redirect(data.url);
 }

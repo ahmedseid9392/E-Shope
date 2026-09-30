@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { assertNoDbError } from "@/lib/errors";
 
 async function requireUser() {
   const supabase = createClient();
@@ -23,7 +24,7 @@ export async function getWishlist() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "getWishlist");
   return data ?? [];
 }
 
@@ -41,7 +42,7 @@ export async function getWishlistIds(): Promise<string[]> {
     .select("product_id")
     .eq("user_id", user.id);
 
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "getWishlistIds");
   return (data ?? []).map((row) => row.product_id);
 }
 
@@ -58,7 +59,7 @@ export async function getWishlistCount() {
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id);
 
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "getWishlistCount");
   return count ?? 0;
 }
 
@@ -71,7 +72,7 @@ export async function addToWishlist(productId: string) {
     .select()
     .maybeSingle();
 
-  if (error && error.code !== "23505") throw new Error(error.message);
+  if (error && error.code !== "23505") assertNoDbError(error, "addToWishlist");
 
   revalidatePath("/wishlist");
   revalidatePath("/products");
@@ -85,7 +86,7 @@ export async function removeFromWishlist(productId: string) {
     .eq("user_id", user.id)
     .eq("product_id", productId);
 
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "removeFromWishlist");
 
   revalidatePath("/wishlist");
   revalidatePath("/products");
@@ -96,16 +97,17 @@ export async function removeFromWishlist(productId: string) {
 export async function toggleWishlist(productId: string): Promise<{ liked: boolean }> {
   const { supabase, user } = await requireUser();
 
-  const { data: existing } = await supabase
+  const { data: existing, error: lookupError } = await supabase
     .from("wishlists")
     .select("id")
     .eq("user_id", user.id)
     .eq("product_id", productId)
     .maybeSingle();
+  assertNoDbError(lookupError, "toggleWishlist.lookup");
 
   if (existing) {
     const { error } = await supabase.from("wishlists").delete().eq("id", existing.id);
-    if (error) throw new Error(error.message);
+    assertNoDbError(error, "toggleWishlist.delete");
     revalidatePath("/wishlist");
     revalidatePath("/products");
     return { liked: false };
@@ -114,7 +116,7 @@ export async function toggleWishlist(productId: string): Promise<{ liked: boolea
   const { error } = await supabase
     .from("wishlists")
     .insert({ user_id: user.id, product_id: productId });
-  if (error) throw new Error(error.message);
+  assertNoDbError(error, "toggleWishlist.insert");
   revalidatePath("/wishlist");
   revalidatePath("/products");
   return { liked: true };
