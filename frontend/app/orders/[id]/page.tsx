@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Clock, CreditCard, Truck, PackageCheck, XCircle, User, Phone, MapPin, HelpCircle } from "lucide-react";
+import { ArrowLeft, Clock, CreditCard, Truck, PackageCheck, XCircle, User, Phone, MapPin, HelpCircle, AlertTriangle } from "lucide-react";
 import { getOrderById } from "@/lib/actions/orders";
 import { formatPrice } from "@/lib/format";
 import { OrderStatusBadge } from "@/components/order-status-badge";
+import { PayNowButton } from "@/components/pay-now-button";
 
 const STEPS = [
   { key: "pending", label: "Placed", icon: Clock },
@@ -20,7 +21,13 @@ type ShippingAddress = {
   city?: string;
 };
 
-export default async function OrderDetailPage({ params }: { params: { id: string } }) {
+export default async function OrderDetailPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { payment_error?: string };
+}) {
   let order;
   try {
     order = await getOrderById(params.id);
@@ -63,6 +70,29 @@ export default async function OrderDetailPage({ params }: { params: { id: string
         </div>
         <OrderStatusBadge status={order.status} size="md" />
       </div>
+
+      {/* ── Payment needed ───────────────────────────────────────────────── */}
+      {searchParams.payment_error === "1" && (
+        <div className="mt-6 flex items-start gap-3 rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-800 dark:border-yellow-900/40 dark:bg-yellow-950 dark:text-yellow-200">
+          <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+          <p className="text-sm">
+            We couldn&apos;t start the Chapa checkout for this order. Your order was saved —
+            use the button below to try paying again.
+          </p>
+        </div>
+      )}
+
+      {order.status === "pending" && (
+        <div className="mt-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-line bg-surface p-4 sm:flex-row sm:items-center sm:p-5">
+          <div>
+            <p className="font-medium text-ink">This order is awaiting payment</p>
+            <p className="mt-0.5 text-sm text-muted">
+              Pay securely via Chapa — bank transfer, mobile money, or card.
+            </p>
+          </div>
+          <PayNowButton orderId={order.id} className="w-full sm:w-auto" />
+        </div>
+      )}
 
       {/* ── Progress ─────────────────────────────────────────────────────── */}
       {order.status === "cancelled" ? (

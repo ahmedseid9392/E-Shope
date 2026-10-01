@@ -11,7 +11,7 @@ function SubmitButton() {
       disabled={pending}
       className="w-full rounded bg-accent py-3 text-onaccent disabled:opacity-50 sm:py-2"
     >
-      {pending ? "Placing order..." : "Place order"}
+      {pending ? "Redirecting to Chapa..." : "Continue to payment"}
     </button>
   );
 }
@@ -23,9 +23,8 @@ export default function CheckoutPage() {
     <main className="mx-auto w-full max-w-md px-4 py-8 sm:py-16">
       <h1 className="font-display text-2xl font-bold text-ink">Checkout</h1>
       <p className="mt-2 text-sm text-muted">
-        Payment via Chapa gets wired in at Phase 8 — for now, placing an order creates it as{" "}
-        <code className="rounded bg-bg px-1 py-0.5">pending</code> so you can test the
-        rest of the order flow.
+        Enter your shipping details, then you&apos;ll be taken to Chapa&apos;s secure
+        checkout to pay via bank transfer, mobile money, or card.
       </p>
 
       <form action={formAction} className="mt-6 space-y-4">
