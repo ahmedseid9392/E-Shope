@@ -42,11 +42,13 @@ don't start Phase 4 with Phase 2 half-done.
   Icons (cart, edit, delete, star rating) via lucide-react. Remaining P1/P2, not blockers:
   autocomplete suggestions and trending searches.
 
-- [ ] **Phase 8 — Integration**
-  The actual gap now: Chapa checkout end-to-end — initialize → redirect → webhook →
-  server-side verify → mark paid → decrement stock → send confirmation email. Right now
-  checkout creates a `pending` order and stops there with no real payment step. This is the
-  next real milestone. Reference: `docs/requirements.md` (checkout flow), `docs/security.md`.
+- [x] **Phase 8 — Integration**
+  Chapa checkout end-to-end — initialize → redirect → webhook → server-side verify → mark
+  paid → decrement stock → confirmation email — all working. Plus: transactional email via
+  Resend (welcome on signup, order confirmation, shipped/delivered/cancelled status emails),
+  password reset via Supabase Auth's own email flow, and a second factor (emailed 6-digit
+  OTP + short-lived MFA session) gating `/admin` beyond the existing `is_admin` check.
+  Reference: `docs/requirements.md` (checkout flow, FR-25), `docs/security.md`.
 
 - [ ] **Phase 9 — Testing**
   Unit tests for utilities/schemas, integration tests for Server Actions + RLS, Playwright E2E

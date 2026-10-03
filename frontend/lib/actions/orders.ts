@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { assertNoDbError } from "@/lib/errors";
+import { sendEmail } from "@/lib/email";
+import { orderStatusEmail } from "@/lib/email-templates";
 
 async function requireUser() {
   const supabase = createClient();
@@ -171,4 +173,21 @@ export async function updateOrderStatus(orderId: string, status: string) {
 
   const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
   assertNoDbError(error, "updateOrderStatus");
+
+  // Best-effort notification — the status update above already succeeded,
+  // so a broken email provider must not turn this into a failed request.
+  const content = orderStatusEmail({ orderId, status });
+  if (content) {
+    try {
+      const { data: order } = await supabase
+        .from("orders")
+        .select("user_id, profiles(email)")
+        .eq("id", orderId)
+        .single();
+      const email = (order?.profiles as any)?.email;
+      if (email) await sendEmail({ to: email, ...content });
+    } catch (err) {
+      console.error("[updateOrderStatus] status email failed", err);
+    }
+  }
 }

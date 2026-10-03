@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useFormState, useFormStatus } from "react-dom";
 import { signIn } from "@/lib/actions/auth";
 import { GoogleSignInButton } from "@/components/google-signin-button";
@@ -20,10 +21,18 @@ function SubmitButton() {
 
 export default function LoginPage() {
   const [state, formAction] = useFormState(signIn, undefined);
+  const searchParams = useSearchParams();
+  const justReset = searchParams.get("reset") === "1";
 
   return (
     <main className="mx-auto w-full max-w-sm px-4 py-8 sm:py-16">
       <h1 className="font-display text-2xl font-bold text-ink">Log in</h1>
+
+      {justReset && (
+        <p className="mt-4 rounded border border-line bg-surface px-3 py-2 text-sm text-ink">
+          Your password has been updated. Log in with your new password.
+        </p>
+      )}
 
       <div className="mt-6">
         <GoogleSignInButton />
@@ -51,9 +60,14 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium">
-            Password
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="block text-sm font-medium">
+              Password
+            </label>
+            <Link href="/forgot-password" className="text-xs text-muted underline">
+              Forgot password?
+            </Link>
+          </div>
           <input
             id="password"
             name="password"

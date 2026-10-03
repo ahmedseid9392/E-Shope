@@ -9,6 +9,8 @@ import {
   splitName,
   normalizeEthiopianPhone,
 } from "@/lib/chapa";
+import { sendEmail } from "@/lib/email";
+import { orderConfirmationEmail } from "@/lib/email-templates";
 
 function siteUrl(): string {
   return process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
@@ -83,6 +85,50 @@ export async function initiateChapaPaymentForOrder(orderId: string): Promise<nev
   redirect(checkoutUrl);
 }
 
+/**
+ * Fires the "payment received" email right after mark_order_paid() flips an
+ * order to `paid` for the first time. Runs via the admin client since this
+ * can be reached from the webhook route, which has no logged-in user at
+ * all. Deliberately swallows every error — a broken email must never be
+ * allowed to affect whether a payment is considered successful, which is
+ * why this isn't called until after the DB already reflects `paid`.
+ */
+async function sendOrderConfirmationEmail(
+  admin: ReturnType<typeof createAdminClient>,
+  orderId: string
+): Promise<void> {
+  try {
+    const { data: order } = await admin
+      .from("orders")
+      .select(
+        "id, total, user_id, order_items(quantity, price_at_purchase, product:products(name))"
+      )
+      .eq("id", orderId)
+      .single();
+    if (!order) return;
+
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("email")
+      .eq("id", order.user_id)
+      .single();
+    if (!profile?.email) return;
+
+    const items = (order.order_items as any[]).map((item) => ({
+      name: item.product?.name ?? "Item",
+      quantity: item.quantity,
+      price: Number(item.price_at_purchase),
+    }));
+
+    await sendEmail({
+      to: profile.email,
+      ...orderConfirmationEmail({ orderId: order.id, items, total: Number(order.total) }),
+    });
+  } catch (err) {
+    console.error("[sendOrderConfirmationEmail] failed", err);
+  }
+}
+
 export type ConfirmOutcome = "paid" | "already_paid" | "failed" | "pending" | "unknown";
 
 /**
@@ -153,6 +199,10 @@ export async function confirmChapaPayment(txRef: string): Promise<{
     p_amount: verification.amount,
   });
   assertNoDbError(rpcError, "confirmChapaPayment.markPaid");
+
+  if (justPaid) {
+    await sendOrderConfirmationEmail(admin, payment.order_id);
+  }
 
   return { outcome: justPaid ? "paid" : "already_paid", orderId: payment.order_id };
 }
