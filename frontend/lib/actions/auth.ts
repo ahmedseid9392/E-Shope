@@ -26,15 +26,27 @@ function siteUrl(): string {
 
 /**
  * Generates + emails a fresh admin OTP for `userId`/`email`. Shared by the
- * post-password-check step in signIn() and the "resend code" action.
- * Returns false (and leaves no new row) if the email couldn't be sent, so
- * the caller can tell the person rather than sending them to a code-entry
- * screen for a code that never arrived.
+ * post-password-check step in signIn() and the "resend code" action. In
+ * production, returns false (and leaves no new row) if the email couldn't
+ * be sent, so the caller can tell the person rather than sending them to a
+ * code-entry screen for a code that never arrived. In development, a failed
+ * send doesn't block — the code is printed to the server console instead
+ * (see the NODE_ENV check below).
  */
 async function issueAdminOtp(userId: string, email: string): Promise<boolean> {
   const code = generateOtpCode();
   const { ok } = await sendEmail({ to: email, ...adminOtpEmail(code) });
-  if (!ok) return false;
+
+  if (!ok) {
+    // In production a failed send must block login — there's no other way
+    // for the code to reach the admin. Locally, though, Resend's sandbox
+    // mode only delivers to the Resend account's own address (a 403 for
+    // anyone else), which would otherwise make admin login untestable
+    // until a domain is verified. So in dev only: don't block, print the
+    // code to the server terminal instead.
+    if (process.env.NODE_ENV === "production") return false;
+    console.warn(`[dev only] admin OTP email failed to send — code is ${code}`);
+  }
 
   const supabase = createClient();
   const codeHash = await sha256Hex(code);

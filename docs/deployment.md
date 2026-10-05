@@ -14,7 +14,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=       # server-only, never exposed to client
 CHAPA_SECRET_KEY=                # server-only
 NEXT_PUBLIC_SITE_URL=
-RESEND_API_KEY=                  # or other email provider
+GMAIL_USER=                      # Gmail address email is sent from (SMTP)
+GMAIL_APP_PASSWORD=               # Gmail App Password — https://myaccount.google.com/apppasswords
 ```
 
 ## Docker (local containerized run)
