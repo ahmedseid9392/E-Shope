@@ -4,6 +4,7 @@ import { formatPrice } from "@/lib/format";
 import { isOnSale } from "@/lib/sale";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { LikeButton } from "@/components/like-button";
+import { RatingSummary } from "@/components/rating-summary";
 
 type Product = {
   id: string;
@@ -15,6 +16,8 @@ type Product = {
   sale_ends_at?: string | null;
   stock: number;
   image_urls?: string[] | null;
+  avg_rating?: number | null;
+  review_count?: number;
 };
 
 export function ProductCard({
@@ -61,6 +64,11 @@ export function ProductCard({
       <h3 className="mt-2 line-clamp-2 font-display text-sm font-semibold text-ink sm:mt-3 sm:text-base">
         {product.name}
       </h3>
+      <RatingSummary
+        avgRating={product.avg_rating ?? null}
+        reviewCount={product.review_count ?? 0}
+        className="mt-1"
+      />
       <div className="mt-1 flex flex-wrap items-center gap-x-2 text-sm sm:text-base">
         {onSale ? (
           <>

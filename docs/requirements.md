@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Project name:** `[E-Shope]` — replace this before launch.
+**Project name:** `[Your Store Name]` — replace this before launch.
 
 **Problem:** Small brands/single-seller shops need a fast, low-cost way to sell online without
 the overhead of a full marketplace platform.
