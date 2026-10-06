@@ -5,8 +5,8 @@
  */
 export const SITE_INFO = {
   legalName: "E-Shope",
-  email: "hello@eshope.example",
-  phone: "+251 900 000 000",
+  email: "eshope4321@gmail.com",
+  phone: "+251 944519392",
   address: {
     line: "Bole Road, Friendship Building, 4th Floor",
     city: "Addis Ababa",
