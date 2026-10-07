@@ -10,7 +10,7 @@ export default function ContactPage() {
       <h1 className="font-display text-2xl font-bold text-ink sm:text-3xl">Contact us</h1>
       <p className="mt-3 max-w-xl text-muted">
         Questions about an order, a product, or anything else — send us a message and
-        we'll get back to you as soon as we can.
+        we&apos;ll get back to you as soon as we can.
       </p>
 
       <div className="mt-8 grid gap-8 md:grid-cols-2 md:gap-12">

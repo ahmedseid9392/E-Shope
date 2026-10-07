@@ -49,7 +49,7 @@ export default async function AdminSettingsPage() {
           <Link href="/admin/customers" className="text-accent hover:underline">
             Customers page
           </Link>{" "}
-          and toggle "Make admin."
+          and toggle &ldquo;Make admin.&ldquo;
         </p>
       </section>
 

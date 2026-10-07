@@ -32,8 +32,8 @@ export default function AboutPage() {
         here, from bank transfer to mobile money.
       </p>
       <p className="mt-4 text-muted">
-        We're a small team based in Addis Ababa, and we personally review every product
-        category we carry. If something isn't right with an order, we want to hear about
+        We&apos;re a small team based in Addis Ababa, and we personally review every product
+        category we carry. If something isn&apos;t right with an order, we want to hear about
         it — see the contact page below.
       </p>
 
