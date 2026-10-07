@@ -129,6 +129,37 @@ async function sendOrderConfirmationEmail(
   }
 }
 
+/**
+ * Payment/transaction attempts for one order, for the admin order detail
+ * page. `payments` has zero client-facing policies by design (see
+ * docs/security.md) — even an admin's regular session can't read it, so
+ * this goes through the admin client after checking admin status itself.
+ */
+export async function getPaymentsForOrder(orderId: string) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated.");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+  if (!profile?.is_admin) throw new Error("Not authorized.");
+
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("payments")
+    .select("id, tx_ref, chapa_reference, status, amount, created_at")
+    .eq("order_id", orderId)
+    .order("created_at", { ascending: false });
+
+  assertNoDbError(error, "getPaymentsForOrder");
+  return data ?? [];
+}
+
 export type ConfirmOutcome = "paid" | "already_paid" | "failed" | "pending" | "unknown";
 
 /**

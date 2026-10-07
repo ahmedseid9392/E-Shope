@@ -137,7 +137,41 @@ export async function createPendingOrderFromCart(shippingAddress: Record<string,
 
 // ── Admin ────────────────────────────────────────────────────────────────────
 
-export async function getAllOrdersForAdmin() {
+/**
+ * Full order detail for the admin order page — same shape as getOrderById's
+ * order_items/product join, plus the customer's profile (name, email,
+ * avatar), which getOrderById doesn't need for the customer's own view.
+ */
+export async function getOrderForAdmin(orderId: string) {
+  const { supabase, user } = await requireUser();
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+  assertNoDbError(profileError, "getOrderForAdmin.profile");
+  if (!profile?.is_admin) throw new Error("Not authorized.");
+
+  const { data: order, error } = await supabase
+    .from("orders")
+    .select(
+      "*, order_items(*, product:products(name, slug, image_urls)), profiles(id, full_name, email, avatar_url, created_at)"
+    )
+    .eq("id", orderId)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") throw new Error("Order not found.");
+    assertNoDbError(error, "getOrderForAdmin");
+  }
+
+  return order;
+}
+
+/** `customerId` narrows to one customer's orders — used by the "View orders"
+ *  link on the admin Customers page. Omit it for the full order list. */
+export async function getAllOrdersForAdmin(customerId?: string) {
   const { supabase, user } = await requireUser();
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
@@ -147,10 +181,14 @@ export async function getAllOrdersForAdmin() {
   assertNoDbError(profileError, "getAllOrdersForAdmin.profile");
   if (!profile?.is_admin) throw new Error("Not authorized.");
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("orders")
     .select("id, status, total, created_at, user_id, profiles(full_name, email)")
     .order("created_at", { ascending: false });
+
+  if (customerId) query = query.eq("user_id", customerId);
+
+  const { data, error } = await query;
 
   assertNoDbError(error, "getAllOrdersForAdmin");
   return data ?? [];

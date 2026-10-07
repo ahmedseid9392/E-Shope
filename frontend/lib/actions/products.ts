@@ -15,6 +15,41 @@ export type ProductListParams = {
   sort?: "newest" | "price_asc" | "price_desc";
 };
 
+export type ProductWithRating<T> = T & { avg_rating: number | null; review_count: number };
+
+/**
+ * Merges in { avg_rating, review_count } from the `product_ratings` view for
+ * every product in `products`, defaulting to { null, 0 } for products with
+ * no reviews yet (they have no row in the view at all). One extra query per
+ * listing call, regardless of how many products are in it.
+ */
+async function attachRatings<T extends { id: string }>(
+  products: T[]
+): Promise<ProductWithRating<T>[]> {
+  if (products.length === 0) return [];
+
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("product_ratings")
+    .select("product_id, avg_rating, review_count")
+    .in(
+      "product_id",
+      products.map((p) => p.id)
+    );
+
+  if (error) console.error("[attachRatings]", error.message);
+
+  const ratings = new Map(
+    (data ?? []).map((r) => [r.product_id, { avg_rating: Number(r.avg_rating), review_count: r.review_count }])
+  );
+
+  return products.map((p) => ({
+    ...p,
+    avg_rating: ratings.get(p.id)?.avg_rating ?? null,
+    review_count: ratings.get(p.id)?.review_count ?? 0,
+  }));
+}
+
 // ── Public reads ─────────────────────────────────────────────────────────────
 
 export async function listProducts(params: ProductListParams = {}) {
@@ -47,7 +82,7 @@ export async function listProducts(params: ProductListParams = {}) {
 
   const { data, error } = await query;
   assertNoDbError(error, "listProducts");
-  return data ?? [];
+  return attachRatings(data ?? []);
 }
 
 export async function getProductBySlug(slug: string) {
@@ -66,7 +101,8 @@ export async function getProductBySlug(slug: string) {
     if (error.code !== "PGRST116") console.error("[getProductBySlug]", error.message);
     return null;
   }
-  return data;
+  const [withRating] = await attachRatings([data]);
+  return withRating;
 }
 
 export async function getRelatedProducts(categoryId: string | null, excludeId: string) {
@@ -83,7 +119,7 @@ export async function getRelatedProducts(categoryId: string | null, excludeId: s
   // This is a "you might also like" section, not the main content — log and
   // degrade to an empty list rather than breaking the whole product page.
   if (error) console.error("[getRelatedProducts]", error.message);
-  return data ?? [];
+  return attachRatings(data ?? []);
 }
 
 export async function getNewArrivals(limit = 8) {
@@ -95,7 +131,7 @@ export async function getNewArrivals(limit = 8) {
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) console.error("[getNewArrivals]", error.message);
-  return data ?? [];
+  return attachRatings(data ?? []);
 }
 
 export async function getDeals(limit = 8) {
@@ -112,7 +148,7 @@ export async function getDeals(limit = 8) {
     .order("created_at", { ascending: false });
 
   if (error) console.error("[getDeals]", error.message);
-  return (data ?? []).filter((p) => isOnSale(p)).slice(0, limit);
+  return attachRatings((data ?? []).filter((p) => isOnSale(p)).slice(0, limit));
 }
 
 export async function getCategories() {
@@ -142,7 +178,7 @@ export async function getOtherProducts(excludeIds: string[], limit = 8) {
 
   const { data, error } = await query;
   if (error) console.error("[getOtherProducts]", error.message);
-  return data ?? [];
+  return attachRatings(data ?? []);
 }
 
 // ── Admin writes ─────────────────────────────────────────────────────────────

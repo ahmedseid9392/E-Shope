@@ -13,6 +13,7 @@ import { ProductOptions } from "@/components/product-options";
 import { LikeButton } from "@/components/like-button";
 import { ReviewForm } from "@/components/review-form";
 import { StarRating } from "@/components/star-rating";
+import { RatingSummary } from "@/components/rating-summary";
 
 export default async function ProductDetailPage({
   params,
@@ -52,6 +53,13 @@ export default async function ProductDetailPage({
 
         <div>
           <h1 className="font-display text-xl font-bold text-ink sm:text-2xl">{product.name}</h1>
+
+          <RatingSummary
+            avgRating={product.avg_rating ?? null}
+            reviewCount={product.review_count ?? 0}
+            size={15}
+            className="mt-1.5"
+          />
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {onSale ? (
@@ -100,7 +108,10 @@ export default async function ProductDetailPage({
       )}
 
       <section className="mt-12 max-w-xl sm:mt-16">
-        <h2 className="font-display text-lg font-bold text-ink">Reviews</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="font-display text-lg font-bold text-ink">Reviews</h2>
+          <RatingSummary avgRating={product.avg_rating ?? null} reviewCount={product.review_count ?? 0} />
+        </div>
 
         <div className="mt-4 space-y-4">
           {reviews.length === 0 && (

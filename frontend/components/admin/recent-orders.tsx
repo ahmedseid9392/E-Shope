@@ -21,7 +21,7 @@ export function RecentOrders({ orders }: { orders: RecentOrder[] }) {
       {orders.map((order) => (
         <li key={order.id}>
           <Link
-            href={`/orders/${order.id}`}
+            href={`/admin/orders/${order.id}`}
             className="flex items-center gap-3 py-3 transition hover:bg-bg/60"
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
