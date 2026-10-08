@@ -129,9 +129,29 @@ create or replace function is_admin() returns boolean as $$
   );
 $$ language sql stable security definer;
 
--- profiles
+-- profiles  
+--The update policy restricts which row a user can update, but it does not restrict which columns they can change
 create policy "read own profile" on profiles for select using (auth.uid() = id);
 create policy "update own profile" on profiles for update using (auth.uid() = id);
+-- The insert policy allows any authenticated user to create a profile for themselves, but not for anyone else.
+--create policy "insert own profile" on profiles for insert with check (auth.uid() = id
+begin;
+
+-- Remove broad table-level UPDATE privileges.
+revoke update on table public.profiles
+from anon, authenticated;
+
+-- Remove any existing column-level UPDATE privileges too.
+revoke update (id, email, full_name, avatar_url, is_admin, created_at)
+on table public.profiles
+from anon, authenticated;
+
+-- Allow authenticated customers to update only approved fields.
+grant update (full_name, avatar_url)
+on table public.profiles
+to authenticated;
+
+commit;
 
 -- categories: public read, admin write
 create policy "public read categories" on categories for select using (true);
