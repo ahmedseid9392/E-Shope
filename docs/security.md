@@ -72,3 +72,12 @@ create policy "own orders" on orders
 - Rate limiting on auth and checkout endpoints (basic MVP: Vercel/Supabase built-in protections;
   revisit if abuse appears).
 - HTTPS enforced everywhere (default on Vercel + Supabase).
+SEC-006 — Confirmed order-creation integrity vulnerability
+Customers may create fake paid orders
+
+High priority
+Your current database permissions and RLS policy allow an authenticated user to attempt inserting their own order with a forged total or a status of paid. The policy checks ownership only; it does not require the initial status to be pending.    Updated security review status
+Finding	Status
+SEC-003 — Customer can promote themselves to admin	Fixed in staging; profile updates retested
+SEC-004 — Unrestricted payment RPC execution	Execution permissions restricted in staging
+SEC-005 — Optional webhook signature verification	Deferred; revisit before production if webhook is enabled
