@@ -58,3 +58,15 @@ begin
   return true;
 end;
 $$;
+
+begin;
+
+revoke execute on function public.mark_order_paid(
+  uuid, text, text, numeric
+) from public, anon, authenticated;
+
+grant execute on function public.mark_order_paid(
+  uuid, text, text, numeric
+) to service_role;
+
+commit;

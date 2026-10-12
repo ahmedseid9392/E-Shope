@@ -73,63 +73,23 @@ export async function getOrderById(orderId: string) {
  * verifies the transaction (Phase 8). This action's job is just to snapshot the
  * cart into an order + order_items at a known total.
  */
-export async function createPendingOrderFromCart(shippingAddress: Record<string, unknown>) {
-  const { supabase, user } = await requireUser();
 
-  const { data: cartItems, error: cartError } = await supabase
-    .from("cart_items")
-    .select("quantity, color, size, product:products(id, price, sale_price, stock, name, is_active)")
-    .eq("user_id", user.id);
+export async function createPendingOrderFromCart(
+  shippingAddress: Record<string, unknown>
+) {
+  const { supabase } = await requireUser();
 
-  assertNoDbError(cartError, "createPendingOrderFromCart.cart");
-  if (!cartItems || cartItems.length === 0) throw new Error("Your cart is empty.");
-
-  for (const item of cartItems as any[]) {
-    if (!item.product?.is_active) {
-      throw new Error(`${item.product?.name ?? "An item"} in your cart is no longer available.`);
+  const { data: order, error } = await supabase.rpc(
+    "create_pending_order_from_cart",
+    {
+      p_shipping_address: shippingAddress,
     }
-    if (item.product.stock < item.quantity) {
-      throw new Error(
-        item.product.stock > 0
-          ? `Only ${item.product.stock} of ${item.product.name} left — please update your cart.`
-          : `${item.product.name} is out of stock — please remove it from your cart.`
-      );
-    }
-  }
+  );
 
-  const total = (cartItems as any[]).reduce((sum, item) => {
-    const unitPrice = item.product.sale_price ?? item.product.price;
-    return sum + unitPrice * item.quantity;
-  }, 0);
+  assertNoDbError(error, "createPendingOrderFromCart");
 
-  const { data: order, error: orderError } = await supabase
-    .from("orders")
-    .insert({
-      user_id: user.id,
-      status: "pending",
-      total,
-      shipping_address: shippingAddress,
-    })
-    .select()
-    .single();
-
-  assertNoDbError(orderError, "createPendingOrderFromCart.order");
-
-  const orderItems = (cartItems as any[]).map((item) => ({
-    order_id: order.id,
-    product_id: item.product.id,
-    quantity: item.quantity,
-    price_at_purchase: item.product.sale_price ?? item.product.price,
-    color: item.color ?? null,
-    size: item.size ?? null,
-  }));
-
-  const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-  if (itemsError) {
-    // Roll back the order so a failed item insert doesn't leave a phantom
-    // empty order behind for the customer to find in their history.
-    await supabase.from("orders").delete().eq("id", order.id);
-    assertNoDbError(itemsError, "createPendingOrderFromCart.items");
+  if (!order) {
+    throw new Error("Order creation did not return an order.");
   }
 
   return order;
