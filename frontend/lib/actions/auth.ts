@@ -1,5 +1,8 @@
 "use server";
-
+// lib/actions/auth.ts is central to the application's authentication flows. 
+// It connects form submissions to Supabase Auth, OTP storage, email, and session cookies.
+//  It also contains several review points—atomic OTP consumption, abuse controls, 
+// and redirect validation—that we can verify against the database migrations and callback implementation.
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";

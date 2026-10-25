@@ -3,6 +3,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { CookieOptions } from "@supabase/ssr";
 import { ADMIN_MFA_COOKIE, sha256Hex } from "@/lib/mfa";
 
+// This file coordinates four main responsibilities:
+// 1. Refreshing and validating the Supabase authentication session.
+// 2. Redirecting unauthenticated visitors away from protected routes.
+// 3. Checking whether a signed-in user has administrator privileges.
+// 4. Requiring a second-factor verification for admin rou
+
 const CUSTOMER_PROTECTED_PREFIXES = ["/cart", "/checkout", "/orders", "/account"];
 
 export async function updateSession(request: NextRequest) {
