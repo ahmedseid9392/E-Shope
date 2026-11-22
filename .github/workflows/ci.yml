@@ -44,6 +44,10 @@ jobs:
         with:
           version: latest
 
+      - name: Start local Supabase stack
+        working-directory: backend
+        run: supabase start
+
       - name: Check migrations apply cleanly
         working-directory: backend
         run: supabase db lint
