@@ -1,17 +1,20 @@
-version: "3.9"
-
-# Runs the Next.js frontend in a container for local/staging use.
-# Supabase is NOT included here — run it separately via the Supabase CLI:
-#   cd backend && supabase start
-# Then point the env vars below at the URL/keys it prints out.
 
 services:
   frontend:
     build:
       context: .
       dockerfile: docker/frontend.Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
+        NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+
     ports:
       - "3000:3000"
+
     env_file:
       - ./frontend/.env.local
+
     restart: unless-stopped

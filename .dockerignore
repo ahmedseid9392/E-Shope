@@ -1,0 +1,12 @@
+
+.git
+**/node_modules
+**/.next
+**/.env
+**/.env.*
+**/npm-debug.log*
+backend
+docs
+front.zip
+full.zip
+*.zip
