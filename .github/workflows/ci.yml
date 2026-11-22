@@ -44,7 +44,7 @@ jobs:
         with:
           version: latest
 
-      - name: Start local Supabase
+      - name: Start local Supabase stack
         working-directory: backend
         run: supabase start
 
