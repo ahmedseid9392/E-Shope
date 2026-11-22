@@ -12,6 +12,8 @@ export type ProductListParams = {
   category?: string;
   minPrice?: number;
   maxPrice?: number;
+  availability?: "in_stock";
+  sale?: "only";
   sort?: "newest" | "price_asc" | "price_desc";
 };
 
@@ -57,7 +59,17 @@ export async function listProducts(params: ProductListParams = {}) {
   let query = supabase.from("products").select("*").eq("is_active", true);
 
   if (params.q) {
-    query = query.ilike("name", `%${params.q}%`);
+    const { data: matchingCategories } = await supabase
+      .from("categories")
+      .select("id")
+      .ilike("name", `%${params.q}%`);
+    const categoryIds = (matchingCategories ?? []).map((category) => category.id);
+    const safeTerm = params.q.replace(/[%_,()]/g, "");
+    const filters = [`name.ilike.%${safeTerm}%`];
+    if (categoryIds.length > 0) {
+      filters.push(`category_id.in.(${categoryIds.join(",")})`);
+    }
+    query = query.or(filters.join(","));
   }
   if (params.category) {
     query = query.eq("category_id", params.category);
@@ -82,7 +94,16 @@ export async function listProducts(params: ProductListParams = {}) {
 
   const { data, error } = await query;
   assertNoDbError(error, "listProducts");
-  return attachRatings(data ?? []);
+  let products = data ?? [];
+
+  if (params.availability === "in_stock") {
+    products = products.filter((product) => product.stock > 0);
+  }
+  if (params.sale === "only") {
+    products = products.filter((product) => isOnSale(product));
+  }
+
+  return attachRatings(products);
 }
 
 export async function getProductBySlug(slug: string) {

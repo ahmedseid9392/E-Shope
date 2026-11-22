@@ -119,11 +119,25 @@ export default async function ProductDetailPage({
           )}
           {reviews.map((r: any) => (
             <div key={r.id} className="border-b border-line pb-3">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <StarRating rating={r.rating} />
-                <span className="text-muted">
-                  {r.profiles?.full_name ?? "Anonymous"}
-                </span>
+              <div className="flex items-center gap-2">
+                {r.profile?.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={r.profile.avatar_url}
+                    alt=""
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-bg text-xs font-semibold text-muted">
+                    {(r.profile?.full_name ?? "A").charAt(0).toUpperCase()}
+                  </span>
+                )}
+                <div>
+                  <p className="text-sm font-medium text-ink">
+                    {r.profile?.full_name ?? "Anonymous"}
+                  </p>
+                  <StarRating rating={r.rating} />
+                </div>
               </div>
               {r.comment && <p className="mt-1 text-sm text-ink">{r.comment}</p>}
             </div>
