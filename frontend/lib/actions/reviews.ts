@@ -8,12 +8,27 @@ export async function getReviews(productId: string) {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("reviews")
-    .select("id, rating, comment, created_at, profiles(full_name)")
+    .select("id, rating, comment, created_at, user_id")
     .eq("product_id", productId)
     .order("created_at", { ascending: false });
 
   assertNoDbError(error, "getReviews");
-  return data ?? [];
+  const reviews = data ?? [];
+  if (reviews.length === 0) return [];
+
+  const { data: profiles, error: profilesError } = await supabase
+    .from("public_profile_names")
+    .select("id, full_name, avatar_url")
+    .in("id", reviews.map((review) => review.user_id));
+  if (profilesError) console.error("[getReviews]", profilesError.message);
+
+  const profileMap = new Map(
+    (profiles ?? []).map((profile) => [profile.id, profile])
+  );
+  return reviews.map((review) => ({
+    ...review,
+    profile: profileMap.get(review.user_id) ?? null,
+  }));
 }
 
 export type ReviewActionState = { error?: string; success?: boolean } | undefined;

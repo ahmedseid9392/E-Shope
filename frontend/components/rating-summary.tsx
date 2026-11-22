@@ -13,9 +13,21 @@ export function RatingSummary({
 }) {
   if (!avgRating || reviewCount === 0) return null;
 
+  const roundedRating = Math.round(avgRating);
+
   return (
-    <span className={`flex items-center gap-1 text-xs text-muted ${className}`}>
-      <Star size={size} className="text-accent" fill="currentColor" strokeWidth={0} />
+    <span className={`flex items-center gap-1.5 text-xs text-muted ${className}`}>
+      <span className="flex items-center gap-0.5" aria-label={`${avgRating.toFixed(1)} out of 5 stars`}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            size={size}
+            className={star <= roundedRating ? "text-accent" : "text-muted/40"}
+            fill={star <= roundedRating ? "currentColor" : "none"}
+            strokeWidth={1.5}
+          />
+        ))}
+      </span>
       <span className="font-medium text-ink">{avgRating.toFixed(1)}</span>
       <span>({reviewCount})</span>
     </span>
