@@ -35,5 +35,25 @@ export async function GET(request: Request) {
     );
   }
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    const metadata = user.user_metadata ?? {};
+    const fullName =
+      metadata.full_name ?? metadata.name ?? metadata.user_name ?? null;
+    const avatarUrl = metadata.avatar_url ?? metadata.picture ?? null;
+
+    await supabase.from("profiles").upsert(
+      {
+        id: user.id,
+        email: user.email,
+        ...(fullName ? { full_name: fullName } : {}),
+        ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
+      },
+      { onConflict: "id" }
+    );
+  }
+
   return response;
 }

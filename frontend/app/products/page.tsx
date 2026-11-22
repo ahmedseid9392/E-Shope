@@ -7,9 +7,19 @@ import { ProductFilters } from "@/components/product-filters";
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: { q?: string; category?: string; sort?: string };
+  searchParams: {
+    q?: string;
+    category?: string;
+    sort?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    availability?: string;
+    sale?: string;
+  };
 }) {
-  const { q, category, sort } = searchParams;
+  const { q, category, sort, availability, sale } = searchParams;
+  const minPrice = searchParams.minPrice ? Number(searchParams.minPrice) : undefined;
+  const maxPrice = searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined;
 
   if (q) {
     await logSearch(q);
@@ -20,6 +30,10 @@ export default async function ProductsPage({
       q,
       category,
       sort: sort as "newest" | "price_asc" | "price_desc" | undefined,
+      minPrice: Number.isFinite(minPrice) ? minPrice : undefined,
+      maxPrice: Number.isFinite(maxPrice) ? maxPrice : undefined,
+      availability: availability === "in_stock" ? "in_stock" : undefined,
+      sale: sale === "only" ? "only" : undefined,
     }),
     getCategories(),
     getRecentSearches(),
